@@ -105,4 +105,9 @@
 
   </div>
 
-</div>
+<app-motorista-edit
+  *ngIf="modalAberto"
+  [motorista]="motoristaSelecionado"
+  (aoFechar)="fecharModal()"
+  (aoSalvar)="salvarEdicao($event)">
+</app-motorista-edit>

@@ -1,19 +1,26 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MotoristaEditComponent } from './components/motorista-edit/motorista-edit.component';
 
 interface Motorista {
   id: number;
   nome: string;
   status: 'Ativo' | 'Em análise' | 'Recusado';
+  identidade?: string;
+  cnh?: string;
+  placa?: string;
+  modelo?: string;
+  email?: string;
+  senha?: string;
+  foto?: string;
 }
 
 @Component({
   selector: 'app-motoristas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './motoristas.html',
-  styleUrl: './motoristas.scss',
+  imports: [CommonModule, FormsModule, MotoristaEditComponent],
+  templateUrl: './motoristas.component.html',
 })
 export class MotoristasComponent {
   filtro = '';
@@ -41,9 +48,13 @@ export class MotoristasComponent {
     );
   }
 
+  modalAberto = false;
+  motoristaSelecionado: Motorista | null = null;
+
   editar(motorista:Motorista){
     console.log('Editar motorista', motorista);
-    // AQUI ABRE O MODAL DE EDIÇÃO
+    this.motoristaSelecionado = { ...motorista }; // cópia
+    this.modalAberto = true;
   }
 
   excluir(motorista:Motorista){
@@ -56,4 +67,17 @@ export class MotoristasComponent {
     // AQUI ABRE O MODAL DE ADIÇÃO DE MOTORISTA
   }
 
+  fecharModal() {
+  this.modalAberto = false;
+  this.motoristaSelecionado = null;
+}
+
+  salvarEdicao(motoristaEditado: Motorista) {
+    const index = this.motoristas.findIndex((m) => m.id === motoristaEditado.id);
+    if (index !== -1) {
+      this.motoristas[index] = motoristaEditado;
+    }
+    this.fecharModal();
+  }
+  
 }

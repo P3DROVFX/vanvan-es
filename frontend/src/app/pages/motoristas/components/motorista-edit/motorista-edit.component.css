@@ -1,0 +1,90 @@
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* MODAL CARD */
+.modal {
+  width: 900px;
+  max-width: 95%;
+  background: #FAFAFA;
+  padding: 40px 60px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* TÍTULO */
+.modal-title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #112B3C;
+}
+
+/* FORM */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #112B3C;
+}
+
+.form-group input {
+  background: #EEEEEF;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  outline: none;
+}
+
+/* LINHAS COM 2 CAMPOS */
+.row {
+  display: flex;
+  gap: 22px;
+}
+
+.row .form-group {
+  flex: 1;
+}
+
+/* BOTÕES */
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.btn-cancelar {
+  background: #EEEEEF;
+  color: #557D96;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-salvar {
+  background: #F66B0E;
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
