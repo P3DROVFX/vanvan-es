@@ -4,6 +4,7 @@ import { MainLayout } from './layout/main-layout';
 
 export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login) },
+  { path: 'motoristas', loadComponent: () => import('./pages/motoristas/motoristas.component').then(m => m.MotoristasComponent)},
   { path: 'register', loadComponent: () => import('./pages/register/register').then(m => m.Register) },
   { 
     path: '', 
