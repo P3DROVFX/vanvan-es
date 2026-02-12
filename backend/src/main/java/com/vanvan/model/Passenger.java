@@ -4,6 +4,7 @@ import com.vanvan.enums.UserRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 
 @Entity
 @Table(name = "passengers")
@@ -13,4 +14,5 @@ public class Passenger extends User {
     public Passenger(String name, String cpf, String phone, String email, String password) {
         super(name, cpf, phone, email, password, UserRole.PASSENGER);
     }
+
 }

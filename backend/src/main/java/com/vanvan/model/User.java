@@ -61,7 +61,11 @@ public abstract class User implements UserDetails {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
     }
-
+    @Override
+    @NullMarked
+    public String getUsername(){
+        return this.email;
+    }
 
     @Override
     public boolean isAccountNonExpired() {
