@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -19,17 +20,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
 
-    private final JwtService jwtService;
 
     @Override
+    @NullMarked
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
 
         if (token != null){
-            var email = jwtService.validateAndGetSubject(token);
+            var email = JwtService.validateAndGetSubject(token);
             UserDetails user = userRepository.findByEmail(email);
 
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         }
 
         filterChain.doFilter(request, response);

@@ -1,14 +1,18 @@
 package com.vanvan.service;
 
+import com.vanvan.dto.DriverRegisterRequestDTO;
+import com.vanvan.dto.RegisterDTO;
+import com.vanvan.dto.RegisterRequestDTO;
+import com.vanvan.exception.CnhAlreadyExistsException;
+import com.vanvan.model.Driver;
+import com.vanvan.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.vanvan.exception.CnhAlreadyExistsException;
 import com.vanvan.exception.CpfAlreadyExistsException;
 import com.vanvan.exception.EmailAlreadyExistsException;
 import com.vanvan.model.Administrator;
-import com.vanvan.model.Driver;
 import com.vanvan.model.Passenger;
 import com.vanvan.repository.AdministratorRepository;
 import com.vanvan.repository.DriverRepository;
@@ -33,52 +37,68 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Driver registerDriver(Driver driver) {
-        //verifica se o email já está cadastrado
-        if (userRepository.findByEmail(driver.getEmail()) != null) {
-            throw new EmailAlreadyExistsException(driver.getEmail());
+    public User register(RegisterDTO data) {
+
+        var user = convertToUser(data);
+        // Verifica se o e-mail já está cadastrado
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new EmailAlreadyExistsException(user.getName());
         }
-        //verifica se o cpf já está cadastrado (Busca global no UserRepository)
-        if (userRepository.findByCpf(driver.getCpf()) != null) {
-            throw new CpfAlreadyExistsException(driver.getCpf());
+        // Verifica se o CPF já está cadastrado
+        else if (userRepository.findByCpf(user.getCpf()) != null) {
+            throw new CpfAlreadyExistsException(user.getCpf());
+            //verifica ecnh em caso de driver
+        } else if (user instanceof Driver driver && driverRepository.existsByCnh(driver.getCnh())) {
+            throw new CnhAlreadyExistsException(driver.getCnh());
         }
-        //verifica se a cnh já está cadastrada
-        if (driverRepository.existsByCnh(driver.getCnh())) {
-             throw new CnhAlreadyExistsException(driver.getCnh());
-        }
-        //salva a senha criptografada
-        String encryptedPassword = passwordEncoder.encode(driver.getPassword());
-        driver.setPassword(encryptedPassword);
-        return driverRepository.save(driver);
+        // Criptografa a senha
+        String encryptedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
+
+        // Faz o switch pelo tipo de usuário
+        return switch (user.getRole()) {
+            case PASSENGER -> {
+                assert user instanceof Passenger;
+                yield passengerRepository.save((Passenger) user);
+            }
+            case ADMIN -> {
+                assert user instanceof Administrator;
+                yield administratorRepository.save((Administrator) user);
+            }
+            case DRIVER -> {
+                assert user instanceof Driver;
+                yield driverRepository.save((Driver) user);
+            }
+        };
     }
 
-    public Passenger registerPassenger(Passenger passenger) {
-        //verifica se o email já está cadastrado
-        if (userRepository.findByEmail(passenger.getEmail()) != null) {
-            throw new EmailAlreadyExistsException(passenger.getEmail());
+   /*
+   * Transforma DTO em seu respectivo User
+   * **/
+    private User convertToUser(RegisterDTO dto) {
+        switch (dto.role()) {
+            case "passenger" -> {
+                RegisterRequestDTO p = (RegisterRequestDTO) dto;
+                new Passenger(p.username(), p.CPF(), p.phone(), p.email(), p.password());
+            }
+            case "administrator" -> {
+                RegisterRequestDTO a = (RegisterRequestDTO) dto;
+                new Administrator(a.username(), a.CPF(), a.phone(), a.email(), a.password());
+            }
+            case "driver" -> {
+                DriverRegisterRequestDTO d = (DriverRegisterRequestDTO)  dto;
+                return new Driver(
+                    d.passengerDTO().username(),
+                    d.passengerDTO().CPF(),
+                    d.passengerDTO().phone(),
+                    d.passengerDTO().email(),
+                    d.passengerDTO().password(),
+                    d.cnh(), d.pixKey());
+                }
+            default -> throw new IllegalArgumentException("Tipo de usuário inválido.");
         }
-        //verifica se o cpf já está cadastrado (Busca global)
-        if (userRepository.findByCpf(passenger.getCpf()) != null) {
-            throw new CpfAlreadyExistsException(passenger.getCpf());
-        }
-        //salva a senha criptografada
-        String encryptedPassword = passwordEncoder.encode(passenger.getPassword());
-        passenger.setPassword(encryptedPassword);
-        return passengerRepository.save(passenger);
+        return null;
     }
 
-    public Administrator registerAdmin(Administrator administrator) {
-        //verifica se o email já está cadastrado
-        if (userRepository.findByEmail(administrator.getEmail()) != null) {
-            throw new EmailAlreadyExistsException(administrator.getEmail());
-        }
-        //verifica se o cpf já está cadastrado (Busca global)
-        if (userRepository.findByCpf(administrator.getCpf()) != null) {
-            throw new CpfAlreadyExistsException(administrator.getCpf());
-        }
-        //salva a senha criptografada
-        String encryptedPassword = passwordEncoder.encode(administrator.getPassword());
-        administrator.setPassword(encryptedPassword);
-        return administratorRepository.save(administrator);
-    }
+
 }

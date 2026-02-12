@@ -1,38 +1,53 @@
 package com.vanvan.controller;
 
-import com.vanvan.dto.LoginRequest;
-import com.vanvan.dto.RegisterRequest;
-import com.vanvan.dto.TokenResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.vanvan.config.security.JwtService;
+import com.vanvan.dto.*;
+import com.vanvan.service.UserService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@AllArgsConstructor
 public class AuthController {
 
-    @Autowired
     private AuthenticationManager authenticationManager;
 
+    private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest data) {
-
-        return ResponseEntity.ok("Usuário registrado com sucesso!");
+    public ResponseEntity<?> register(@RequestBody RegisterDTO data) {
+        try {
+            var user = userService.register(data);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(UserResponseDTO.from(user));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest data) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO data) {
+        try {
+            var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
 
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
+            var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        
-        String token = "TOKEN_JWT_GERADO_AQUI"; 
+            var user = (UserDetails) auth.getPrincipal();
 
-        
-        return ResponseEntity.ok(new TokenResponse(token));
+            String token = JwtService.generateToken(user.getUsername());
+
+            return ResponseEntity.ok(new TokenResponseDTO(token));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Email ou senha inválidos");
+        }
     }
 }
