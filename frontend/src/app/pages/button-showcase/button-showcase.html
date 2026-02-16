@@ -191,6 +191,32 @@
         <app-buttons variant="tertiary" (click)="showErrorToast()">Trigger Error</app-buttons>
       </div>
     </section>
+
+    <!-- DEBUG: City API Test -->
+    <section class="mb-16">
+      <h2 class="text-header-2 font-bold text-dark mb-6 pb-2 border-b-2 border-primary">🔍 Debug: API Cidades IBGE</h2>
+      <p class="text-body text-subtle-text mb-4">Status: <strong>{{ debugStatus }}</strong></p>
+      
+      <div class="mb-4">
+        <label class="text-small text-text block mb-1">Buscar cidade:</label>
+        <input type="text" 
+               [(ngModel)]="debugCityQuery" 
+               (input)="onDebugCityInput()"
+               placeholder="Digite o nome da cidade..."
+               class="bg-light rounded-lg px-4 py-3 w-full max-w-md text-body text-dark outline-none border border-transparent focus:border-secondary">
+      </div>
+
+      <div *ngIf="debugCitySuggestions.length > 0" class="bg-light rounded-lg p-4 max-w-md">
+        <p class="text-small text-subtle-text mb-2">Resultados:</p>
+        <div *ngFor="let city of debugCitySuggestions" class="py-2 px-3 bg-white rounded-lg mb-1 text-body text-dark">
+          {{ city.label }}
+        </div>
+      </div>
+
+      <div *ngIf="debugCityQuery.length >= 2 && debugCitySuggestions.length === 0" class="text-body text-subtle-text mt-2">
+        Nenhuma cidade encontrada.
+      </div>
+    </section>
   </div>
   
   <!-- Global Toast Container -->

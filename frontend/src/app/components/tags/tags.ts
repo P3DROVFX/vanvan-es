@@ -16,7 +16,7 @@ export class Tag {
   @Input() textColor: string = '';
   
   get tagClasses(): string {
-    const base = 'inline-flex items-center justify-center px-[10px] py-[2px] rounded-[18px] font-["Google_Sans_Flex"] text-[16px] leading-tight whitespace-nowrap';
+    const base = 'inline-flex items-center justify-center px-[10px] py-[2px] rounded-[18px] font-["Google_Sans_Flex"] text-[16px] font-bold leading-tight whitespace-nowrap';
     
     // Exact colors from design
     const variants: Record<TagVariant, string> = {

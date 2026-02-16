@@ -27,7 +27,11 @@ export class AuthService {
   register(data: any): Observable<any> {
     // Determine role based on email if not present, default to passenger/client
     const isAdmin = data.email && data.email.toLowerCase().includes('admin');
-    const role = isAdmin ? 'admin' : 'passenger';
+    const isDriver = data.email && data.email.toLowerCase().includes('motorista');
+    
+    let role = 'passenger';
+    if (isAdmin) role = 'admin';
+    else if (isDriver) role = 'driver';
     
     // Map frontend fields (telephone) to backend (phone) and add role
     const payload = {
@@ -47,7 +51,12 @@ export class AuthService {
       map(response => {
         // Backend only returns token, so we deduce role from email as per instructions
         const isAdmin = email.toLowerCase().includes('admin');
-        const role = isAdmin ? 'admin' : 'client';
+        const isDriver = email.toLowerCase().includes('motorista');
+        
+        let role = 'client';
+        if (isAdmin) role = 'admin';
+        else if (isDriver) role = 'driver';
+
         return { token: response.token, role };
       }),
       tap(res => {

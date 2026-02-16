@@ -24,10 +24,10 @@ export const routes: Routes = [
   {
     path: '',
     component: ClientLayout,
-    canActivate: [authGuard],
     children: [
       { path: 'home', loadComponent: () => import('./pages/home/home').then(m => m.Home) },
-      // Adicione outras rotas de cliente (passenger/driver) aqui
+      { path: 'viagens', loadComponent: () => import('./pages/viagens/viagens').then(m => m.Viagens), canActivate: [authGuard] },
+      { path: 'motorista', loadComponent: () => import('./pages/motorista-page/motorista-page').then(m => m.MotoristaPage), canActivate: [authGuard] },
     ]
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' }
