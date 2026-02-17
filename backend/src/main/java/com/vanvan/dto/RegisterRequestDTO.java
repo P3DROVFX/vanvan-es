@@ -4,7 +4,6 @@ import com.vanvan.enums.UserRole;
 import com.vanvan.model.Administrator;
 import com.vanvan.model.Passenger;
 import com.vanvan.model.User;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;

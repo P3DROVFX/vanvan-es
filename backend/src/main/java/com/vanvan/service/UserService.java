@@ -6,7 +6,6 @@ import com.vanvan.exception.CnhAlreadyExistsException;
 import com.vanvan.exception.UnderageDriverException;
 import com.vanvan.model.Driver;
 import com.vanvan.model.User;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
