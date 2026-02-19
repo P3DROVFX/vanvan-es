@@ -32,7 +32,7 @@ export class AuthService {
   }
 
   register(data: any): Observable<any> {
-    // Determine role: use explicit role from data, detect admin by email, or default to passenger
+    // PARA SE CADASTRAR COMO ADMIN INCLUIR "admin" NO EMAIL, EX: admin@email.com (TEMPORÁRIO, APENAS PARA TESTES)
     const isAdmin = data.email && data.email.toLowerCase().includes('admin');
     
     let role = 'passenger';

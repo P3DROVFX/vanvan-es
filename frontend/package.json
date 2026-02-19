@@ -41,6 +41,7 @@
     "@angular/cli": "^21.1.2",
     "@angular/compiler-cli": "^21.1.0",
     "@types/express": "^5.0.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.17.19",
     "autoprefixer": "^10.4.24",
     "jsdom": "^27.1.0",
