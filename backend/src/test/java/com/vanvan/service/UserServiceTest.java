@@ -1,32 +1,28 @@
 package com.vanvan.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.vanvan.dto.DriverRegisterRequestDTO;
-import com.vanvan.enums.UserRole;
 import com.vanvan.model.Driver;
 import com.vanvan.repository.DriverRepository;
-import com.vanvan.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
- 
+
     @Mock
     private PasswordEncoder passwordEncoder;
 
