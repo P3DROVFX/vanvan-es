@@ -1,7 +1,7 @@
 
 export default {
   bootstrap: () => import('./main.server.mjs').then(m => m.default),
-  inlineCriticalCss: false,
+  inlineCriticalCss: true,
   baseHref: '/',
   locale: undefined,
   routes: [
@@ -12,43 +12,42 @@ export default {
   {
     "renderMode": 2,
     "preload": [
-      "chunk-AFONEOLX.js",
-      "chunk-U2W2W7J3.js"
+      "chunk-MD33FE5X.js",
+      "chunk-PQSA5I6N.js"
     ],
     "route": "/login"
   },
   {
     "renderMode": 2,
     "preload": [
-      "chunk-2FDZDPMG.js",
-      "chunk-U2W2W7J3.js"
+      "chunk-ZW7U6OJJ.js",
+      "chunk-PQSA5I6N.js"
     ],
     "route": "/register"
   },
   {
     "renderMode": 2,
     "preload": [
-      "chunk-OMIB7Y3T.js",
-      "chunk-U2W2W7J3.js"
+      "chunk-PPBVOOQE.js",
+      "chunk-PQSA5I6N.js"
     ],
     "route": "/register-driver-1"
   },
   {
     "renderMode": 2,
     "preload": [
-      "chunk-CCNGMBRN.js",
-      "chunk-U2W2W7J3.js"
+      "chunk-HMQJUAA7.js",
+      "chunk-PQSA5I6N.js"
     ],
     "route": "/register-driver-2"
   },
   {
     "renderMode": 2,
     "preload": [
-      "chunk-SIOSINPX.js",
-      "chunk-KTAY5R4Z.js",
-      "chunk-IBTXRLNE.js",
-      "chunk-OHFGESWH.js",
-      "chunk-U2W2W7J3.js"
+      "chunk-YGFMSP3Q.js",
+      "chunk-HBOMB3AQ.js",
+      "chunk-GVXQHMZ3.js",
+      "chunk-PQSA5I6N.js"
     ],
     "route": "/buttons"
   },
@@ -60,72 +59,64 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-IWGKZEI5.js"
+      "chunk-FCLA2KW4.js"
     ],
     "route": "/admin/relatorios"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-RRZH7UVK.js",
-      "chunk-JMVF53DM.js",
-      "chunk-OHFGESWH.js",
-      "chunk-U2W2W7J3.js"
+      "chunk-WCT5ISEU.js",
+      "chunk-ZTKE6YZK.js",
+      "chunk-PQSA5I6N.js"
     ],
     "route": "/admin/motoristas"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-754OGYTT.js",
-      "chunk-U2W2W7J3.js"
-    ],
-    "route": "/admin/clientes"
-  },
-  {
-    "renderMode": 1,
-    "preload": [
-      "chunk-HVRPMXM4.js",
-      "chunk-IBTXRLNE.js",
-      "chunk-JMVF53DM.js"
+      "chunk-XA2J5KJ6.js",
+      "chunk-GVXQHMZ3.js",
+      "chunk-ZTKE6YZK.js"
     ],
     "route": "/admin/aprovar-motoristas"
   },
   {
     "renderMode": 2,
     "preload": [
-      "chunk-TSLF34AF.js",
-      "chunk-KTAY5R4Z.js",
-      "chunk-IBTXRLNE.js",
-      "chunk-U2W2W7J3.js"
+      "chunk-VATA6TKZ.js",
+      "chunk-HBOMB3AQ.js",
+      "chunk-GVXQHMZ3.js",
+      "chunk-PQSA5I6N.js"
     ],
     "route": "/home"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-XQR2NZ5Q.js"
+      "chunk-LOCENV6M.js"
     ],
     "route": "/viagens"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-Y5SCRWH4.js"
+      "chunk-EK2TLS3L.js"
     ],
     "route": "/motorista"
   }
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 959, hash: 'eebcf9d0a7aaa36cbf7a9efe660e60e3c4b42940fb53fb3ba01740629fedc687', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 1499, hash: '2f623ffd647a0441161a852de57def0d6f4ebf0a529e72947aa2509931170d2e', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
-    'index.html': {size: 4223, hash: 'b77695ad2ff5a1f1aff2359ed00cd536abb03fb036a7f81b31fec3821cdea57f', text: () => import('./assets-chunks/index_html.mjs').then(m => m.default)},
-    'register/index.html': {size: 7787, hash: '2a4db9da5a1eb74b2dd1095cec2356215b0ae9386316f39fb21daa4f6e456c29', text: () => import('./assets-chunks/register_index_html.mjs').then(m => m.default)},
-    'login/index.html': {size: 5545, hash: 'e781398b6dcabbc769faa455c8ae24e1e0150531d61ba838bed113726132ec27', text: () => import('./assets-chunks/login_index_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 8716, hash: '6daa6dbe1be0d34bcf11cfedaf4f1cbc4ea9795c21bcf554dadbb910654a5567', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 1303, hash: 'f6cf5d75c9189af68d4b55d2539b2ca790526093b0bc2f9aff569f4364d21276', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.html': {size: 16812, hash: '993dbbb71e47be56af694205fa4925dcf234bb262d4319b4646dc4afced46f0d', text: () => import('./assets-chunks/index_html.mjs').then(m => m.default)},
+    'login/index.html': {size: 24339, hash: 'dc5816281217bc52e463eac68c7841359eb72c190762d953093c272896f0c9d9', text: () => import('./assets-chunks/login_index_html.mjs').then(m => m.default)},
+    'home/index.html': {size: 49250, hash: '077889929908bd108a850390b7460083efbab9af71e7c995f0145bc016f07b04', text: () => import('./assets-chunks/home_index_html.mjs').then(m => m.default)},
+    'buttons/index.html': {size: 40467, hash: '5e205a57ee1755e45f8b7d7094812432ab7953a2f75d68d78009e549df37ddea', text: () => import('./assets-chunks/buttons_index_html.mjs').then(m => m.default)},
     'register-driver-2/index.html': {size: 276, hash: 'bccecf9b4112905d4dabd0ad44df9d587704028579d7278a4a451285ee31ae6a', text: () => import('./assets-chunks/register-driver-2_index_html.mjs').then(m => m.default)},
-    'register-driver-1/index.html': {size: 6957, hash: 'd66d0475772e0f08bf3dc8b8c5ff3a552a43734ed459ca47ffae6e800a7dff8d', text: () => import('./assets-chunks/register-driver-1_index_html.mjs').then(m => m.default)},
-    'home/index.html': {size: 32049, hash: '54e5ed785f0fd4a425c09705bde9e23d02631696808dfc54cfd6add8129e37bf', text: () => import('./assets-chunks/home_index_html.mjs').then(m => m.default)},
-    'buttons/index.html': {size: 29328, hash: 'e12b80cf2cea87c3c84b0792f30d156fdb10bd1d519408fc4930295c9592450a', text: () => import('./assets-chunks/buttons_index_html.mjs').then(m => m.default)}
+    'register/index.html': {size: 26540, hash: '4eba2778d3d895056a92775224fe04835025d42bcdc2d7a0225068dfbc46720d', text: () => import('./assets-chunks/register_index_html.mjs').then(m => m.default)},
+    'register-driver-1/index.html': {size: 25590, hash: '8633e30b6dc2da91d1abca4f321486d2b6334daf6c2f6b6396b92cf8b275b618', text: () => import('./assets-chunks/register-driver-1_index_html.mjs').then(m => m.default)},
+    'styles-OXJEAJZ4.css': {size: 41881, hash: 'PovWIGR3tCE', text: () => import('./assets-chunks/styles-OXJEAJZ4_css.mjs').then(m => m.default)}
   },
 };

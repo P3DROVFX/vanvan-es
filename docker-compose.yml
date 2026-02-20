@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  backend:
+    image: seu-usuario-dockerhub/backend-java:latest
+    build: ./backend # Caminho para a pasta do Java
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb
+      - SPRING_PROFILES_ACTIVE=prod
+    deploy:
+      resources:
+        limits:
+          memory: 8G # Vamos alocar bastante RAM já que temos sobrando
+
+  frontend:
+    image: pedrovfx/frontend-angular:latest
+    build: ./frontend # Caminho para a pasta do Angular
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
