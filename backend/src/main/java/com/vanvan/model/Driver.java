@@ -1,7 +1,10 @@
 package com.vanvan.model;
 
+import java.time.LocalDate;
+
 import com.vanvan.enums.RegistrationStatus;
 import com.vanvan.enums.UserRole;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,8 +13,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "drivers")
@@ -28,7 +29,7 @@ public class Driver extends User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "registration_status")
-    private RegistrationStatus registrationStatus;
+    private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
     
     @Column(name = "rejection_reason")
     private String rejectionReason;
