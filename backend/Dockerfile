@@ -2,7 +2,7 @@
 FROM maven:3.9.12-eclipse-temurin-25 AS build
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn clean package -Dmaven.test.skip=true
 
 # Etapa 2: Runtime (Cria a imagem final leve só para rodar)
 FROM eclipse-temurin:25-jdk-alpine
