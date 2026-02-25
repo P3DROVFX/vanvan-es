@@ -25,6 +25,9 @@ export interface PageResponse<T> {
   providedIn: 'root',
 })
 export class AdminService {
+  listClients(undefined: undefined, arg1: number, arg2: number) {
+    throw new Error('Method not implemented.');
+  }
   private readonly API_URL = 'http://localhost:8080/api/admin';
 
   constructor(private http: HttpClient) {}
@@ -79,6 +82,7 @@ export class AdminService {
   deleteDriver(driverId: string): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/drivers/${driverId}`);
   }
+  
 }
 
 

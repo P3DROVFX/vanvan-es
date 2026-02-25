@@ -1,58 +1,122 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-interface Clients {
-  id: number;
-  nome: string;
-  telephone: string;
-}
+import { ClienteAddComponent } from './clients-add/clients-add';
+import { ClienteEditComponent } from './clients-edit/clients-edit';
+import { ClienteDeleteComponent } from './clients-delete/clients-delete';
+
+import { ClienteService, Cliente } from '../../services/client.service';
 
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './clients.html',
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ClienteAddComponent, 
+    ClienteEditComponent, 
+    ClienteDeleteComponent
+  ],
+  templateUrl: './clients.html', 
 })
-export class ClientsList {
-  filtro = '';
-  clients: Clients[] = [
-    { id: 1, nome: 'João Silva ', telephone: '1234567890' },
-    { id: 2, nome: 'Maria Oliveira', telephone: '0987654321' },
-    { id: 3, nome: 'Carlos Pereira', telephone: '0000000000' },
-    { id: 4, nome: 'Ana Souza', telephone: '0000000000' },
-    { id: 5, nome: 'Pedro Santos', telephone: '1111111111' },
-    { id: 6, nome: 'Luiza Costa', telephone: '2222222222' },
-    { id: 7, nome: 'Rafael Lima', telephone: '3333333333' },
-    { id: 8, nome: 'Fernanda Alves', telephone: '4444444444' },
-    { id: 9, nome: 'Bruno Rodrigues', telephone: '5555555555' },
-    { id: 10, nome: 'Carla Mendes', telephone: '6666666666' },
-    { id: 11, nome: 'Gustavo Ferreira', telephone: '7777777777' },
-    { id: 12, nome: 'Mariana Gomes', telephone: 'Recusado' },
-    { id: 13, nome: 'Ricardo Barbosa', telephone: 'Ativo' },
-    { id: 14, nome: 'Aline Ribeiro', telephone: 'Em análise' },
-    { id: 15, nome: 'Felipe Martins', telephone: 'Recusado' },
-  ];
+export class ClientsComponent implements OnInit {
 
-  get clientsFiltered(): Clients[] {
-    return this.clients.filter((c) =>
-      c.nome.toLowerCase().includes(this.filtro.toLowerCase()) || c.id.toString().includes(this.filtro)
-    );
+  // --- VARIÁVEIS DE DADOS ---
+  listaClientes: Cliente[] = [];
+  clientesFiltrados = signal<Cliente[]>([]);
+  termoBusca: string = '';
+  carregando = signal(false);
+  erro = signal('');
+
+  // --- CONTROLE DE MODAIS ---
+  modalAdicionarAberto: boolean = false;
+  modalEditarAberto: boolean = false;
+  modalExcluirAberto: boolean = false;
+
+  // --- CLIENTE SELECIONADO ---
+  clienteSelecionado: Cliente | null = null;
+
+  // Injetando o novo ClienteService
+  constructor(private clienteService: ClienteService) { }
+
+  ngOnInit(): void {
+    this.carregarClientes();
   }
 
-  edit(client:Clients){
-    console.log('Editar cliente', client);
-    // AQUI ABRE O MODAL DE EDIÇÃO
+  // --- 1. CARREGAR DADOS ---
+  carregarClientes(): void {
+    this.carregando.set(true);
+    this.erro.set('');
+    
+    // Agora usamos o listar() do ClienteService
+    this.clienteService.listar(0, 100).subscribe({
+      next: (clientes: Cliente[]) => {
+        // Como usamos o pipe(map) no serviço, já recebemos a array direto aqui!
+        this.listaClientes = clientes;
+        this.filtrarClientes();
+        this.carregando.set(false);
+      },
+      error: (err: any) => {
+        console.error('Erro ao buscar clientes:', err);
+        this.erro.set('Erro ao carregar clientes.');
+        this.carregando.set(false);
+      }
+    });
   }
 
-  exclude(client:Clients){
-    console.log('Excluir cliente', client);
-    // AQUI ABRE O MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+  // --- 2. FILTRO DE BUSCA ---
+  filtrarClientes() {
+    if (!this.termoBusca.trim()) {
+      this.clientesFiltrados.set([...this.listaClientes]);
+    } else {
+      const termo = this.termoBusca.toLowerCase();
+      this.clientesFiltrados.set(
+        this.listaClientes.filter(c =>
+          c.name.toLowerCase().includes(termo) ||
+          c.email.toLowerCase().includes(termo) 
+        )
+      );
+    }
   }
 
-  add(client:Clients){
-    console.log('Adicionar cliente', client);
-    // AQUI ABRE O MODAL DE ADIÇÃO DE CLIENTE
+  // --- 3. LÓGICA DO MODAL ADICIONAR ---
+  abrirModalAdicionar() {
+    this.modalAdicionarAberto = true;
   }
 
+  fecharModalAdicionar(sucesso: boolean) {
+    this.modalAdicionarAberto = false;
+    if (sucesso) {
+      this.carregarClientes(); // Recarrega a lista se adicionou com sucesso
+    }
+  }
+
+  // --- 4. LÓGICA DO MODAL EDITAR ---
+  abrirModalEditar(cliente: Cliente) {
+    this.clienteSelecionado = { ...cliente };
+    this.modalEditarAberto = true;
+  }
+
+  fecharModalEditar(sucesso: boolean) {
+    this.modalEditarAberto = false;
+    this.clienteSelecionado = null;
+    if (sucesso) {
+      this.carregarClientes(); // Recarrega a lista se editou com sucesso
+    }
+  }
+
+  // --- 5. LÓGICA DO MODAL EXCLUIR ---
+  abrirModalExcluir(cliente: Cliente) {
+    this.clienteSelecionado = cliente;
+    this.modalExcluirAberto = true;
+  }
+
+  fecharModalExcluir(sucesso: boolean) {
+    this.modalExcluirAberto = false;
+    this.clienteSelecionado = null;
+    if (sucesso) {
+      this.carregarClientes(); // Recarrega a lista se excluiu com sucesso
+    }
+  }
 }
