@@ -18,10 +18,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.vanvan.dto.DriverRegisterRequestDTO;
 import com.vanvan.model.Driver;
 import com.vanvan.repository.DriverRepository;
+import com.vanvan.repository.UserRepository; //
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
