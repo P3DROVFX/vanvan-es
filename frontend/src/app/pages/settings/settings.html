@@ -1,0 +1,154 @@
+<div style="flex: 1; padding: 0 20px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 24px; display: flex; min-width: 0;">
+  
+  <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; display: flex">
+    <div style="align-self: stretch; justify-content: space-between; align-items: center; gap: 20px; display: flex; flex-wrap: wrap;">
+      <div style="color: #112B3C; font-size: 56px; font-family: 'Google Sans Flex'; font-weight: 700; word-wrap: break-word">Trechos de viagens</div>
+      
+      <div style="flex: 1; max-width: 500px; height: 51px; padding: 0 20px; background: #EEEEEF; border-radius: 46px; display: flex; align-items: center; gap: 14px">
+          <img src="assets/icons/search-normal.svg" style="width: 20px; height: 20px; opacity: 0.7;">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Pesquisar por Nome da Rota" 
+          style="flex: 1; border: none; background: transparent; outline: none; color: #646464; font-size: 20px; font-family: 'Google Sans Flex'; font-weight: 500;">
+      </div>
+    </div>
+
+    <div style="align-self: stretch; flex-direction: column; display: flex; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.05))">
+      <div style="align-self: stretch; padding: 20px; background: #EEEEEF; border-radius: 24px 24px 4px 4px; display: flex; flex-direction: column; gap: 16px">
+        <div style="align-self: stretch; justify-content: center; align-items: center; gap: 12px; display: flex">
+          
+          <div style="flex: 1; flex-direction: column; gap: 4px; display: flex">
+            <div style="color: #112B3C; font-size: 14px; font-family: 'Google Sans Flex'; font-weight: 500">Origem</div>
+            <div style="padding: 12px 16px; background: #FAFAFA; border-radius: 8px; display: flex; align-items: center; gap: 10px">
+              <img src="assets/icons/plane-take-off.svg" style="width: 24px; height: 24px; opacity: 0.7;">
+              <input type="text" [(ngModel)]="newOrigin" placeholder="Cidade de partida" 
+                style="flex: 1; border: none; background: transparent; outline: none; color: #646464; font-size: 16px; font-family: 'Work Sans'; font-weight: 500;">
+            </div>
+          </div>
+
+          <div style="flex: 1; flex-direction: column; gap: 4px; display: flex">
+            <div style="color: #112B3C; font-size: 14px; font-family: 'Google Sans Flex'; font-weight: 500">Destino</div>
+            <div style="padding: 12px 16px; background: #FAFAFA; border-radius: 8px; display: flex; align-items: center; gap: 10px">
+              <img src="assets/icons/plane-land.svg" style="width: 24px; height: 24px; opacity: 0.7;">
+              <input type="text" [(ngModel)]="newDestination" placeholder="Cidade de destino" 
+                style="flex: 1; border: none; background: transparent; outline: none; color: #646464; font-size: 16px; font-family: 'Work Sans'; font-weight: 500;">
+            </div>
+          </div>
+        </div>
+
+        <div style="align-self: stretch; justify-content: space-between; align-items: center; display: flex">
+          <div style="display: flex; gap: 48px">
+            <div style="display: flex; gap: 6px; align-items: center">
+              <span style="color: #646464; font-size: 15px; font-family: 'Work Sans'">Valor estimado da viagem:</span>
+              <img src="assets/icons/dollar-circle.svg" style="width: 18px; height: 18px; opacity: 0.7;">
+              <span style="color: #112B3C; font-size: 15px; font-family: 'Google Sans Flex'; font-weight: 700">R${{ estimatedValue | number:'1.2-2' }}</span>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center">
+              <span style="color: #646464; font-size: 15px; font-family: 'Work Sans'">Distância:</span>
+              <span style="color: #112B3C; font-size: 15px; font-family: 'Google Sans Flex'; font-weight: 700">{{ distance }}km</span>
+            </div>
+          </div>
+          <div (click)="addJourney()" style="cursor: pointer; width: 280px; padding: 14px; background: #F66B0E; box-shadow: 0px 4px 10px rgba(246, 107, 14, 0.3); border-radius: 8px; color: #EEEEEF; font-size: 16px; font-family: 'Google Sans Flex'; font-weight: 700; text-transform: uppercase; text-align: center; letter-spacing: 0.5px;">
+            adicionar
+          </div>
+        </div>
+      </div>
+
+      <div style="align-self: stretch; padding: 24px; background: #EEEEEF; border-radius: 4px 4px 24px 24px; display: flex; flex-direction: column; gap: 10px">
+        <div style="padding: 14px 40px; background: #FAFAFA; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-family: 'Google Sans Flex'; font-weight: 700; color: #112B3C; font-size: 20px">
+          <div style="flex: 1">Nome da rota</div>
+          <div style="flex: 1">Origem</div>
+          <div style="flex: 1">Destino</div>
+          <div style="width: 80px; text-align: right">Ações</div>
+        </div>
+
+        @for (journey of journeys(); track journey.id) {
+          <div style="padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; font-family: 'Google Sans Flex'; font-size: 20px; color: #646464">
+            <div style="flex: 1">{{ journey.name }}</div>
+            <div style="flex: 1">{{ journey.origin }}</div>
+            <div style="flex: 1">{{ journey.destination }}</div>
+            <div style="width: 80px; display: flex; justify-content: flex-end; gap: 20px">
+              <div (click)="openEditModal(journey)" style="cursor: pointer; width: 24px; height: 24px; background: #646464; mask-image: url('assets/icons/edit.svg'); -webkit-mask-image: url('assets/icons/edit.svg'); mask-size: contain; mask-repeat: no-repeat;"></div>
+              <div (click)="openDeleteModal(journey)" style="cursor: pointer; width: 24px; height: 24px; background: #646464; mask-image: url('assets/icons/trash.svg'); -webkit-mask-image: url('assets/icons/trash.svg'); mask-size: contain; mask-repeat: no-repeat;"></div>
+            </div>
+          </div>
+          <div style="height: 1px; background: #646464; opacity: 0.15; align-self: stretch; margin: 0 40px"></div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div style="align-self: stretch; flex-direction: column; gap: 12px; display: flex; margin-top: 10px">
+    <div style="color: #112B3C; font-size: 36px; font-family: 'Google Sans Flex'; font-weight: 700">Tarifas</div>
+    <div style="padding: 24px; background: #EEEEEF; border-radius: 24px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span style="color: #112B3C; font-size: 22px; font-family: 'Google Sans Flex'; font-weight: 700">Valor da tarifa para cada km</span>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span style="color: #112B3C; font-size: 20px; font-family: 'Google Sans Flex'; font-weight: 700">Valor atual:</span>
+          <img src="assets/icons/dollar-circle.svg" style="width: 18px; height: 18px; opacity: 0.7;">
+          <span style="color: #646464; font-size: 18px; font-weight: 700">R${{ currentRate | number:'1.2-2' }}</span>
+        </div>
+      </div>
+      
+      <div style="padding: 12px 16px; background: #FAFAFA; border-radius: 8px; display: flex">
+        <input type="number" [(ngModel)]="newRateValue" placeholder="Valor em reais" 
+          style="flex: 1; border: none; background: transparent; outline: none; color: #646464; font-size: 16px; font-family: 'Work Sans';">
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <div style="color: #646464; font-size: 16px; font-family: 'Google Sans Flex'">
+          Valor para 100km: 
+          <img src="assets/icons/dollar-circle.svg" style="width: 18px; height: 18px; opacity: 0.7; vertical-align: middle; margin-left: 4px;">
+          <strong style="color: #112B3C">R${{ currentRate * 100 | number:'1.2-2' }}</strong>
+        </div>
+        <div (click)="saveRate()" style="cursor: pointer; width: 280px; padding: 14px; background: #F66B0E; box-shadow: 0px 4px 10px rgba(246, 107, 14, 0.3); border-radius: 8px; color: #EEEEEF; font-size: 16px; font-family: 'Google Sans Flex'; font-weight: 700; text-transform: uppercase; text-align: center">
+          Salvar
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (showEditModal) {
+<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+    <div style="width: 1178px; padding: 24px 68px; background: #FAFAFA; border-radius: 24px; flex-direction: column; gap: 24px; display: flex">
+        <div style="color: #112B3C; font-size: 64px; font-family: 'Google Sans Flex'; font-weight: 700">Editar trechos de viagens</div>
+        
+        <div style="align-self: stretch; flex-direction: column; gap: 22px; display: flex">
+            <div style="flex-direction: column; gap: 3px; display: flex">
+                <div style="color: #112B3C; font-size: 14px; font-weight: 500">Origem</div>
+                <div style="padding: 12px 16px; background: #EEEEEF; border-radius: 8px;">
+                    <input type="text" [(ngModel)]="selectedJourney.origin" style="width: 100%; border: none; background: transparent; outline: none; color: #646464; font-size: 16px;">
+                </div>
+            </div>
+            <div style="flex-direction: column; gap: 3px; display: flex">
+                <div style="color: #112B3C; font-size: 14px; font-weight: 500">Destino</div>
+                <div style="padding: 12px 16px; background: #EEEEEF; border-radius: 8px;">
+                    <input type="text" [(ngModel)]="selectedJourney.destination" style="width: 100%; border: none; background: transparent; outline: none; color: #646464; font-size: 16px;">
+                </div>
+            </div>
+        </div>
+
+        <div style="justify-content: flex-end; gap: 24px; display: flex">
+            <div (click)="closeModals()" style="cursor: pointer; padding: 14px 60px; background: #EEEEEF; border-radius: 8px; color: #557D96; font-weight: 700; text-transform: uppercase">Cancelar</div>
+            <div (click)="confirmSaveEdit()" style="cursor: pointer; padding: 14px 60px; background: #F66B0E; border-radius: 8px; color: #EEEEEF; font-weight: 700; text-transform: uppercase">Salvar</div>
+        </div>
+    </div>
+</div>
+}
+
+@if (showDeleteModal) {
+<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+    <div style="width: 1178px; padding: 24px 68px; background: #FAFAFA; border-radius: 24px; flex-direction: column; gap: 24px; display: flex">
+        <div style="color: #112B3C; font-size: 64px; font-family: 'Google Sans Flex'; font-weight: 700">Excluir trecho de viagem</div>
+        
+        <div style="flex-direction: column; gap: 10px; display: flex">
+            <div style="color: #112B3C; font-size: 24px; font-weight: 700">Tem certeza que deseja excluir o trecho {{selectedJourney.name}}?</div>
+            <div style="align-self: flex-start; padding: 9px 24px; background: #EEEEEF; border-radius: 12px; color: #F66B0E; font-size: 16px; font-weight: 700; text-transform: uppercase">Esta ação não poderá ser revertida</div>
+        </div>
+
+        <div style="justify-content: flex-end; gap: 24px; display: flex">
+            <div (click)="closeModals()" style="cursor: pointer; padding: 14px 60px; background: #EEEEEF; border-radius: 8px; color: #557D96; font-weight: 700; text-transform: uppercase">Cancelar</div>
+            <div (click)="confirmDelete()" style="cursor: pointer; padding: 14px 60px; background: #557D96; border-radius: 8px; color: #EEEEEF; font-weight: 700; text-transform: uppercase">Excluir</div>
+        </div>
+    </div>
+</div>
+}
