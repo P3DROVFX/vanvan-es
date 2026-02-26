@@ -126,6 +126,11 @@ npm install
 ng serve
 ```
 
+##Como criar uma conta de Administrador:
+1 - Vá da aba de Cadastro
+2 - No campo de "email", deve ser cadastrado um email fictício com o a seguinte estrutura: "admin@domínio.com"
+3 - Preencha o restante dos campos normalmente e clique em "Cadastrar"
+
 O frontend estará acessível em: [http://localhost:4200](http://localhost:4200)
 
 
