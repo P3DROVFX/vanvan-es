@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 
 export interface Cliente {
@@ -26,7 +27,7 @@ interface PageResponse<T> {
 })
 export class ClienteService {
 
-  private readonly API_URL = 'http://localhost:8080/api/admin';
+  private readonly API_URL = `${environment.apiUrl}/api/admin`;
 
   constructor(private http: HttpClient) { }
 

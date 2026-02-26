@@ -56,7 +56,7 @@ public class SecurityConfig {
 @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Frontend URL
+        configuration.setAllowedOrigins(List.of("http://localhost:4200", "https://vanvan-es-frontend.onrender.com")); // Frontend URLs
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

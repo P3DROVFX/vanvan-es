@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, firstValueFrom } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface UserProfile {
   id: string;
@@ -19,8 +20,8 @@ export interface UserProfile {
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly ROLE_KEY = 'auth_role';
-  private readonly API_URL = 'http://localhost:8080/api/auth';
-  private readonly USER_API_URL = 'http://localhost:8080/api/user';
+  private readonly API_URL = `${environment.apiUrl}/api/auth`;
+  private readonly USER_API_URL = `${environment.apiUrl}/api/user`;
 
   currentUser = signal<UserProfile | null>(null);
 
