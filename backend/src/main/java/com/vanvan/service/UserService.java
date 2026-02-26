@@ -8,7 +8,6 @@ import com.vanvan.model.Driver;
 import com.vanvan.model.User;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +25,12 @@ import java.time.Period;
 
 @Service
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserService {
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
     private DriverRepository driverRepository;
-    @Autowired
     private PassengerRepository passengerRepository;
-    @Autowired
     private AdministratorRepository administratorRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public User register(RegisterDTO data) {
