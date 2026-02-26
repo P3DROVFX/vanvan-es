@@ -7,6 +7,7 @@ import com.vanvan.exception.UnderageDriverException;
 import com.vanvan.model.Driver;
 import com.vanvan.model.User;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

@@ -5,40 +5,39 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import com.vanvan.dto.DriverRegisterRequestDTO;
+import com.vanvan.model.Driver;
+import com.vanvan.repository.DriverRepository;
+import com.vanvan.repository.PassengerRepository;
+import com.vanvan.repository.UserRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
-    @InjectMocks private UserService userService;
-
-    @Mock private UserRepository userRepository;
-    @Mock private PassengerRepository passengerRepository;
-    @Mock private DriverRepository driverRepository;
-    @Mock private PasswordEncoder passwordEncoder;
-
-    @Mock
+    @Mock 
+    private UserRepository userRepository;
+    
+    @Mock 
+    private PassengerRepository passengerRepository;
+    
+    @Mock 
+    private DriverRepository driverRepository;
+    
+    @Mock 
     private PasswordEncoder passwordEncoder;
 
-    @Mock
-    private DriverRepository driverRepository;
-
-    @InjectMocks
+    @InjectMocks 
     private UserService userService;
 
     @Test
@@ -60,11 +59,8 @@ public class UserServiceTest {
 
         when(passwordEncoder.encode(anyString())).thenReturn("senhaCriptografada");
        
-        
-   
         userService.register(dto);
 
         verify(driverRepository, times(1)).save(any(Driver.class));
-        
     }
 }
