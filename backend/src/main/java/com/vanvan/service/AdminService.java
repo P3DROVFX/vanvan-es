@@ -4,6 +4,7 @@ import com.vanvan.dto.DriverUpdateDTO;
 import com.vanvan.dto.DriverAdminResponseDTO;
 import com.vanvan.dto.DriverStatusUpdateDTO;
 import com.vanvan.enums.RegistrationStatus;
+import com.vanvan.exception.DriverNotFoundException;
 import com.vanvan.model.Driver;
 import com.vanvan.model.User;
 import com.vanvan.repository.DriverRepository;
@@ -38,7 +39,7 @@ public class AdminService {
     //metodo que serve para arpovar ou rejeitar um motorista
     public DriverAdminResponseDTO updateDriverStatus(UUID driverId, DriverStatusUpdateDTO dto) {
         Driver driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new IllegalArgumentException("Motorista não encontrado."));
+                .orElseThrow(() -> new DriverNotFoundException());
 
         if (dto.status() == RegistrationStatus.REJECTED && (dto.rejectionReason() == null || dto.rejectionReason().isBlank())) {
             throw new IllegalArgumentException("O motivo da rejeição é obrigatório.");
@@ -56,7 +57,7 @@ public class AdminService {
 
     public DriverAdminResponseDTO updateDriver(UUID driverId, DriverUpdateDTO dto) {
         Driver driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new IllegalArgumentException("Motorista não encontrado."));
+                .orElseThrow(() -> new DriverNotFoundException());
 
         if (dto.name() != null && !dto.name().isBlank()) driver.setName(dto.name());
         if (dto.email() != null && !dto.email().isBlank()) driver.setEmail(dto.email());
@@ -70,7 +71,7 @@ public class AdminService {
 
     public void deleteDriver(UUID driverId) {
         Driver driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new IllegalArgumentException("Motorista não encontrado."));
+                .orElseThrow(() -> new DriverNotFoundException());
         driverRepository.delete(driver);
     }
 
