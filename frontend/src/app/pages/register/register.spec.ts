@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Register } from './register';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../components/toast/toast.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -10,6 +11,7 @@ describe('Register Component', () => {
   let fixture: ComponentFixture<Register>;
   let authServiceMock: any;
   let routerMock: any;
+  let toastServiceMock: any;
 
   beforeEach(() => {
     authServiceMock = {
@@ -18,13 +20,18 @@ describe('Register Component', () => {
     routerMock = {
       navigate: vi.fn()
     };
+    toastServiceMock = {
+      error: vi.fn(),
+      success: vi.fn()
+    };
 
     TestBed.configureTestingModule({
       imports: [Register],
       providers: [
         { provide: AuthService, useValue: authServiceMock },
         { provide: Router, useValue: routerMock },
-        { provide: ActivatedRoute, useValue: {} }
+        { provide: ActivatedRoute, useValue: {} },
+        { provide: ToastService, useValue: toastServiceMock }
       ]
     });
 
@@ -49,7 +56,7 @@ describe('Register Component', () => {
   describe('Form Validation', () => {
     it('should show error if fields are empty', () => {
         component.onRegister();
-        expect(component.errorMessage()).toBe('Preencha todos os campos obrigatórios.');
+        expect(toastServiceMock.error).toHaveBeenCalledWith('Preencha todos os campos obrigatórios.');
     });
 
     it('should validate birthdate format', () => {
@@ -59,7 +66,7 @@ describe('Register Component', () => {
         component.birthdate = 'invalid';
         
         component.onRegister();
-        expect(component.errorMessage()).toBe('Data de nascimento inválida. Use o formato dd/mm/aaaa.');
+        expect(toastServiceMock.error).toHaveBeenCalledWith('Data de nascimento inválida. Use o formato dd/mm/aaaa.');
     });
 
     it('should validate birthdate year range', () => {
@@ -69,7 +76,7 @@ describe('Register Component', () => {
         component.birthdate = '01/01/1900'; // Too old
         
         component.onRegister();
-        expect(component.errorMessage()).toBe('O ano de nascimento deve ser entre 1920 e 2020.');
+        expect(toastServiceMock.error).toHaveBeenCalledWith('O ano de nascimento deve ser entre 1920 e 2020.');
     });
 
     it('should validate birthdate logic (day/month)', () => {
@@ -79,7 +86,7 @@ describe('Register Component', () => {
         component.birthdate = '40/13/2000'; // Invalid day/month
         
         component.onRegister();
-        expect(component.errorMessage()).toBe('Data de nascimento inválida.');
+        expect(toastServiceMock.error).toHaveBeenCalledWith('Data de nascimento inválida.');
     });
   });
 
