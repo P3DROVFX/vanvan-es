@@ -24,7 +24,7 @@ public class UserController {
     private final UserRepository userRepository;
 
     @GetMapping("/me")
-    public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Object> me(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername());
         if (user == null) {
             return ResponseEntity.notFound().build();
