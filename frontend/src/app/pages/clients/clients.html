@@ -55,6 +55,21 @@
       </span>
     </div>
 
+    <!-- Estado de carregamento -->
+    <div *ngIf="carregando()" class="flex justify-center items-center py-10">
+      <span class="text-[#646464] text-lg">Carregando motoristas...</span>
+    </div>
+
+    <!-- Estado de erro -->
+    <div *ngIf="erro() && !carregando()" class="flex justify-center items-center py-10">
+      <span class="text-red-500 font-medium text-base">{{ erro() }}</span>
+    </div>
+
+    <!-- Lista vazia -->
+    <div *ngIf="!carregando() && !erro() && clientesFiltrados().length === 0" class="flex justify-center items-center py-10">
+      <span class="text-[#646464] text-lg">Nenhum cliente encontrado.</span>
+    </div>
+
     <div
       *ngFor="let client of clientesFiltrados()"
       class="px-12 py-4 grid grid-cols-[1fr_2fr_1fr_1fr] items-center border-b border-[#646464]/20"
@@ -95,15 +110,15 @@
 }
 
 @if (modalEditarAberto) {
-  <app-cliente-edit 
-    [cliente]="clienteSelecionado" 
+  <app-cliente-edit
+    [cliente]="clienteSelecionado"
     (aoFechar)="fecharModalEditar($event)">
   </app-cliente-edit>
 }
 
 @if (modalExcluirAberto) {
-  <app-cliente-delete 
-    [cliente]="clienteSelecionado" 
+  <app-cliente-delete
+    [cliente]="clienteSelecionado"
     (aoFechar)="fecharModalExcluir($event)">
   </app-cliente-delete>
 }

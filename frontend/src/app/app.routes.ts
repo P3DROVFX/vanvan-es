@@ -12,18 +12,18 @@ export const routes: Routes = [
   { path: 'register-driver-1', loadComponent: () => import('./pages/register-driver/register-driver-1/register-driver-1').then(m => m.RegisterDriverOne) },
   { path: 'register-driver-2', loadComponent: () => import('./pages/register-driver/register-driver-2/register-driver-2').then(m => m.RegisterDriverTwo) },
   { path: 'buttons', loadComponent: () => import('./pages/button-showcase/button-showcase').then(m => m.ButtonShowcase) },
-  { 
-    path: 'admin', 
+  {
+    path: 'admin',
     component: AdminLayout,
-    canActivate: [authGuard], 
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'relatorios', pathMatch: 'full' },
       { path: 'relatorios', loadComponent: () => import('./pages/relatorios/relatorios').then(m => m.Relatorios) },
       { path: 'motoristas', loadComponent: () => import('./pages/motoristas/motoristas.component').then(m => m.MotoristasComponent)},
       { path: 'clientes', loadComponent: () => import('./pages/clients/clients').then(m => m.ClientsComponent)},
       { path: 'aprovar-motoristas', loadComponent: () => import('./pages/approve-drivers/approve-drivers').then(m => m.ApproveDrivers)},
-      { path: 'configuracoes', loadComponent: () => import('./pages/settings/settings').then(m => m.SettingsComponent)}
-    ] 
+      { path: 'settings', loadComponent: () => import('./pages/settings/settings').then(m => m.SettingsComponent)}
+    ]
   },
   {
     path: '',
