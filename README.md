@@ -126,6 +126,14 @@ npm install
 ng serve
 ```
 
+## Como rodar
+
+Acesse o projeto através dos links abaixo:
+
+🔗 [Frontend](https://vanvan-es-frontend.onrender.com/home)
+
+🔗 [Backend](https://vanvan-backend.onrender.com/)
+
 ##  Como criar uma conta de Administrador
 
 1. Acesse a página de **Cadastro**
