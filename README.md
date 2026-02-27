@@ -15,6 +15,7 @@
   ![Spring Boot](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
   ![Angular](https://img.shields.io/badge/angular-%23DD0031.svg?style=for-the-badge&logo=angular&logoColor=white)
   ![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+  
 </div>
 
 ---
@@ -86,6 +87,12 @@ O objetivo é a implementação de um sistema de gerenciamento para a plataforma
 
 ### Banco de Dados
 *   ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white) **PostgreSQL**
+
+## Qualidade de Código
+
+Acompanhamos a saúde do projeto através do **SonarCloud**. Você pode visualizar o relatório detalhado no link abaixo:
+
+🔗 [Dashboard do Projeto no SonarCloud](https://sonarcloud.io/project/overview?id=ES-2025-2-Vanvan_vanvan-es)
 
 ##  Pré-requisitos
 
