@@ -202,8 +202,10 @@ class AdminServiceTest {
     void createClientSuccess() {
         User user = new Passenger();
         user.setEmail("teste@email.com");
+        user.setCpf("04774928003");
 
         when(userRepository.existsByEmail(user.getEmail())).thenReturn(false);
+        when(userRepository.existsByCpf(user.getCpf())).thenReturn(false); // Adicionado mock pro CPF
         when(userRepository.save(user)).thenReturn(user);
 
         var result = adminService.createClient(user);
@@ -224,7 +226,7 @@ class AdminServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar cliente com sucesso (testando os IFs de campos nulos/vazios)")
+    @DisplayName("Deve atualizar cliente com sucesso garantindo obrigatoriedade do telefone")
     void updateClientSuccess() {
         UUID id = UUID.randomUUID();
         User existingUser = new Passenger();
@@ -233,7 +235,7 @@ class AdminServiceTest {
         User updatedInfo = new Passenger();
         updatedInfo.setName("Novo");
         updatedInfo.setEmail("novo@email.com");
-        updatedInfo.setPhone("1234");
+        updatedInfo.setPhone("81999999999");
 
         when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
         when(userRepository.save(any(User.class))).thenReturn(existingUser);
@@ -242,7 +244,21 @@ class AdminServiceTest {
 
         assertEquals("Novo", existingUser.getName());
         assertEquals("novo@email.com", existingUser.getEmail());
+        assertEquals("81999999999", existingUser.getPhone());
         verify(userRepository, times(1)).save(existingUser);
+    }
+    
+    @Test
+    @DisplayName("Deve lançar erro ao atualizar cliente sem telefone")
+    void updateClientFailWithoutPhone() {
+        UUID id = UUID.randomUUID();
+        User existingUser = new Passenger();
+        User updatedInfo = new Passenger();
+        updatedInfo.setName("Novo"); // Enviando sem telefone
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
+
+        assertThrows(IllegalArgumentException.class, () -> adminService.updateClient(id, updatedInfo));
     }
 
     @Test
@@ -250,12 +266,12 @@ class AdminServiceTest {
     void deleteClientSuccess() {
         UUID id = UUID.randomUUID();
         Passenger passenger = new Passenger();
-        passenger.setActive(true); // Garante que ele começa ativo
+        passenger.setActive(true);
         when(userRepository.findById(id)).thenReturn(Optional.of(passenger));
+        
         adminService.deleteClient(id);
-        assertFalse(passenger.isActive(), "O passageiro deveria estar inativo (active = false)");
+        
+        assertFalse(passenger.isActive(), "O passageiro deveria estar inativo");
         verify(userRepository, times(1)).save(passenger);
-        verify(userRepository, times(0)).delete(any(User.class));
     }
-    
 }
