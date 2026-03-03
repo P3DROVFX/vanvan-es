@@ -65,6 +65,44 @@ export class AuthService {
     return this.http.post(`${this.API_URL}/register`, payload);
   }
 
+  /**
+   * Registra um motorista com veículo usando multipart/form-data.
+   * @param driverData Dados do motorista
+   * @param vehicleDocument Documento PDF do veículo (obrigatório)
+   * @param vehiclePhoto Foto do veículo (opcional)
+   */
+  registerDriverWithVehicle(
+    driverData: any,
+    vehicleDocument: File,
+    vehiclePhoto?: File
+  ): Observable<any> {
+    const rawPhone = driverData.telephone ? driverData.telephone.replace(/\D/g, '') : '';
+
+    const driverPayload = {
+      name: driverData.name,
+      email: driverData.email,
+      password: driverData.password,
+      cpf: driverData.cpf,
+      phone: rawPhone,
+      birthDate: driverData.birthDate,
+      role: 'driver',
+      cnh: driverData.cnh,
+      pixKey: driverData.pixKey,
+      vehicleModelName: driverData.vehicleModelName,
+      vehicleLicensePlate: driverData.vehicleLicensePlate
+    };
+
+    const formData = new FormData();
+    formData.append('driver', JSON.stringify(driverPayload));
+    formData.append('vehicleDocument', vehicleDocument);
+
+    if (vehiclePhoto) {
+      formData.append('vehiclePhoto', vehiclePhoto);
+    }
+
+    return this.http.post(`${this.API_URL}/register-driver`, formData);
+  }
+
   login(email: string, pass: string): Observable<{token: string, role: string}> {
     return this.http.post<{token: string}>(`${this.API_URL}/login`, { email, password: pass }).pipe(
       tap(response => {
