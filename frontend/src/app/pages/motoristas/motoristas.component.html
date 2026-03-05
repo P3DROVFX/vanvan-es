@@ -1,7 +1,5 @@
-<!-- Content Area -->
 <div class="flex flex-col gap-6 h-full p-5 w-full">
 
-  <!-- Header: Title + Search + Add Button -->
   <div class="flex gap-5 items-center w-full shrink-0">
     <h1 class="text-text text-header-1 tracking-narrow shrink-0">
       Motoristas
@@ -26,46 +24,38 @@
     </div>
   </div>
 
-  <!-- Table Card -->
   <div class="flex flex-1 flex-col gap-[10px] items-end min-h-0 w-full">
     <div class="bg-light flex flex-col gap-[10px] items-start p-6 rounded-[24px] w-full flex-1 overflow-hidden">
 
-      <!-- Table Header -->
       <div class="bg-white flex items-center px-6 py-5 rounded-[12px] w-full shrink-0">
-        <span class="text-text text-header-3 tracking-narrow flex-[3]">Nome do motorista</span>
-        <span class="text-text text-header-3 tracking-narrow flex-[2] text-center">CNH / CPF</span>
-        <span class="text-text text-header-3 tracking-narrow flex-[1.5] text-center">Status</span>
-        <span class="text-text text-header-3 tracking-narrow flex-[2] text-right">Ações</span>
+        <span class="text-text text-header-3 tracking-narrow flex-1">Nome do motorista</span>
+        <span class="text-text text-header-3 tracking-narrow flex-1 text-center">CNH / CPF</span>
+        <span class="text-text text-header-3 tracking-narrow flex-1 text-center">Status</span>
+        <span class="text-text text-header-3 tracking-narrow flex-1 text-center">Ações</span>
       </div>
 
-      <!-- Loading State -->
       @if (carregando()) {
         <div class="flex items-center justify-center w-full py-10">
           <span class="text-subtle-text text-medium">Carregando motoristas...</span>
         </div>
       }
 
-      <!-- Error State -->
       @if (erro() && !carregando()) {
         <div class="flex items-center justify-center w-full py-10">
           <span class="text-[#d45959] text-medium">{{ erro() }}</span>
         </div>
       }
 
-      <!-- Empty State -->
       @if (!carregando() && !erro() && motoristasFiltrados().length === 0) {
         <div class="flex items-center justify-center w-full py-10">
           <span class="text-subtle-text text-medium">Nenhum motorista encontrado.</span>
         </div>
       }
 
-      <!-- Table Rows -->
       <div class="flex flex-col w-full overflow-y-auto flex-1">
         @for (motorista of motoristasFiltrados(); track motorista.id) {
-          <!-- Row -->
           <div class="flex items-center px-6 py-[14px] w-full">
-            <!-- Driver Info -->
-            <div class="flex gap-3 items-center flex-[3]">
+            <div class="flex gap-3 items-center flex-1">
               <div class="bg-white flex items-center p-3 rounded-full shrink-0">
                 <img src="assets/icons/user.svg" alt="Motorista" class="w-7 h-7" />
               </div>
@@ -75,14 +65,12 @@
               </div>
             </div>
 
-            <!-- CNH / CPF -->
-            <div class="flex flex-col gap-1 justify-center flex-[2] text-center">
+            <div class="flex flex-col gap-1 justify-center flex-1 text-center">
               <span class="text-text text-medium leading-tight">{{ motorista.cnh }}</span>
               <span class="text-subtle-text text-[16px] font-medium leading-tight">{{ motorista.cpf }}</span>
             </div>
 
-            <!-- Status -->
-            <div class="flex-[1.5] flex justify-center">
+            <div class="flex-1 flex justify-center">
               @if (motorista.registrationStatus === 'APPROVED') {
                 <app-tag label="Ativo" variant="success"></app-tag>
               } @else if (motorista.registrationStatus === 'PENDING') {
@@ -92,8 +80,7 @@
               }
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex justify-center gap-8">
+            <div class="flex-1 flex justify-center gap-8">
               <button
                 (click)="abrirModalEditar(motorista)"
               >
@@ -107,7 +94,6 @@
             </div>
           </div>
 
-          <!-- Divider -->
           <div class="w-full h-[1px] bg-accent/30"></div>
         }
       </div>
@@ -132,18 +118,14 @@
   (aoFechar)="fecharModalExcluir(true)">
 </app-motorista-delete>
 
-<!-- Details Modal -->
 @if (showDetailsModal()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center">
-    <!-- Backdrop -->
     <div
       class="absolute inset-0 bg-black/40 backdrop-blur-[12px]"
       (click)="closeDetails()"
     ></div>
 
-    <!-- Modal Card -->
     <div class="relative bg-white rounded-[24px] w-full max-w-[900px] max-h-[90vh] overflow-hidden flex flex-col z-10 shadow-xl">
-      <!-- Header -->
       <div class="flex items-center justify-between px-[68px] py-6 border-b border-accent/30">
         <h2 class="text-text text-header-1 tracking-narrow">Detalhes do Motorista</h2>
         <button
@@ -154,10 +136,8 @@
         </button>
       </div>
 
-      <!-- Content -->
       <div class="flex flex-col gap-6 px-[68px] py-6 overflow-y-auto">
         @if (selectedDriver()) {
-          <!-- Driver Info Section -->
           <div class="flex flex-col gap-4">
             <h3 class="text-text text-header-2 font-bold">Informações Pessoais</h3>
             <div class="bg-light rounded-[16px] p-6 flex flex-col gap-4">
@@ -194,7 +174,6 @@
             </div>
           </div>
 
-          <!-- Vehicle Section -->
           <div class="flex flex-col gap-4">
             <h3 class="text-text text-header-2 font-bold">Veículos Cadastrados</h3>
 
@@ -209,7 +188,6 @@
             } @else {
               @for (vehicle of selectedVehicles(); track vehicle.id) {
                 <div class="bg-light rounded-[16px] p-6 flex flex-col gap-4">
-                  <!-- Vehicle Info -->
                   <div class="flex gap-4">
                     <div class="flex-1">
                       <span class="text-subtle-text text-small block mb-1">Modelo</span>
@@ -221,9 +199,7 @@
                     </div>
                   </div>
 
-                  <!-- Documents -->
                   <div class="flex gap-4">
-                    <!-- Document -->
                     <div class="flex-1">
                       <span class="text-subtle-text text-small block mb-2">Documento do Veículo</span>
                       <button
@@ -236,7 +212,6 @@
                       </button>
                     </div>
 
-                    <!-- Photo -->
                     @if (vehicle.photoPath) {
                       <div class="flex-1">
                         <span class="text-subtle-text text-small block mb-2">Foto do Veículo</span>
@@ -266,7 +241,6 @@
         }
       </div>
 
-      <!-- Footer -->
       <div class="flex justify-end gap-4 px-[68px] py-6 border-t border-accent/30">
         <button
           (click)="closeDetails()"
@@ -278,4 +252,3 @@
     </div>
   </div>
 }
-
