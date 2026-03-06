@@ -8,6 +8,8 @@ import com.vanvan.model.Driver;
 import com.vanvan.model.Passenger;
 import com.vanvan.model.Trip;
 import com.vanvan.model.Location; // assumindo que Departure/Arrival são Location
+import com.vanvan.repository.DriverRepository;
+import com.vanvan.repository.PassengerRepository;
 import com.vanvan.repository.TripRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,11 +32,15 @@ class TripServiceTest {
 
     private TripRepository tripRepository;
     private TripService tripService;
+    private DriverRepository driverRepository;
+    private PassengerRepository passengerRepository;
 
     @BeforeEach
     void setUp() {
         tripRepository = mock(TripRepository.class);
-        tripService = new TripService(tripRepository);
+        driverRepository = mock(driverRepository);
+        passengerRepository = mock(passengerRepository);
+        tripService = new TripService(tripRepository, driverRepository,passengerRepository);
     }
 
 
