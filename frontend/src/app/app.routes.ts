@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { driverApprovedGuard } from './guards/driver-approved.guard';
+import { roleGuard } from './guards/role.guard';
 import { MainLayout } from './layout/main-layout';
 import { AdminLayout } from './layout/admin-layout';
 import { ClientLayout } from './layout/client-layout';
@@ -15,7 +16,8 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayout,
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin'] },
     children: [
       { path: '', redirectTo: 'relatorios', pathMatch: 'full' },
       { path: 'relatorios', loadComponent: () => import('./pages/relatorios/relatorios').then(m => m.Relatorios) },
