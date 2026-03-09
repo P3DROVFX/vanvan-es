@@ -27,6 +27,7 @@ import com.vanvan.repository.DriverRepository;
 import com.vanvan.repository.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -198,7 +199,7 @@ class AdminServiceTest {
 
 
     @Test
-    @DisplayName("Deve atualizar cliente com sucesso (testando os IFs de campos nulos/vazios)")
+    @DisplayName("Deve atualizar cliente com sucesso garantindo obrigatoriedade do telefone")
     void updateClientSuccess() {
         UUID id = UUID.randomUUID();
         User existingUser = new Passenger();
@@ -207,7 +208,7 @@ class AdminServiceTest {
         User updatedInfo = new Passenger();
         updatedInfo.setName("Novo");
         updatedInfo.setEmail("novo@email.com");
-        updatedInfo.setPhone("1234");
+        updatedInfo.setPhone("81999999999");
 
         when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
         when(userRepository.save(any(User.class))).thenReturn(existingUser);
@@ -216,18 +217,40 @@ class AdminServiceTest {
 
         assertEquals("Novo", existingUser.getName());
         assertEquals("novo@email.com", existingUser.getEmail());
+        assertEquals("81999999999", existingUser.getPhone());
         verify(userRepository, times(1)).save(existingUser);
+    }
+    
+    @Test
+    @DisplayName("Deve manter os dados antigos se a atualização for parcial (sem telefone)")
+    void updateClientPartialSuccess() {
+        UUID id = UUID.randomUUID();
+        User existingUser = new Passenger();
+        existingUser.setName("Nome Antigo");
+        existingUser.setPhone("81988888888"); // Ele já tinha um telefone
+        User updatedInfo = new Passenger();
+        updatedInfo.setName("Nome Novo"); // O front mandou só o nome, sem telefone
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenReturn(existingUser);
+
+        adminService.updateClient(id, updatedInfo);
+
+        assertEquals("Nome Novo", existingUser.getName());
+        assertEquals("81988888888", existingUser.getPhone(), "O telefone antigo deve ser mantido");
     }
 
     @Test
-    @DisplayName("Deve excluir cliente com sucesso")
+    @DisplayName("Deve realizar soft delete do cliente com sucesso")
     void deleteClientSuccess() {
         UUID id = UUID.randomUUID();
-        when(userRepository.findById(id)).thenReturn(Optional.of(new Passenger()));
-
+        Passenger passenger = new Passenger();
+        passenger.setActive(true);
+        when(userRepository.findById(id)).thenReturn(Optional.of(passenger));
+        
         adminService.deleteClient(id);
-
-        verify(userRepository, times(1)).delete(any(User.class));
+        
+        assertFalse(passenger.isActive(), "O passageiro deveria estar inativo");
+        verify(userRepository, times(1)).save(passenger);
     }
-    
 }

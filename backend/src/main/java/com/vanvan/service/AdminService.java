@@ -7,15 +7,18 @@ import com.vanvan.enums.RegistrationStatus;
 import com.vanvan.enums.UserRole;
 import com.vanvan.exception.UserNotFoundException;
 import com.vanvan.model.Driver;
+import com.vanvan.model.Passenger;
 import com.vanvan.model.User;
 import com.vanvan.repository.DriverRepository;
 import com.vanvan.repository.UserRepository;
+import com.vanvan.repository.PassengerRepository;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -25,6 +28,7 @@ public class AdminService {
 
     private final DriverRepository driverRepository;
     private final UserRepository userRepository;
+    private final PassengerRepository passengerRepository;
 
     public Page<DriverAdminResponseDTO> listDrivers(RegistrationStatus status, Pageable pageable) {
         if (status != null) {
@@ -76,21 +80,30 @@ public class AdminService {
         driverRepository.delete(driver);
     }
 
-    public Page<User> listClients(Pageable pageable) {
-        return userRepository.findByRole(com.vanvan.enums.UserRole.PASSENGER, pageable);
+    public Page<Passenger> listClients(String name, String cpf, String email, Pageable pageable) {
+        return passengerRepository.findByFilters(name, cpf, email, pageable);
     }
 
+    public Passenger getClientById(UUID id) {
+        return (Passenger) userRepository.findById(id)
+                .filter(u -> u instanceof Passenger)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado ou não é um passageiro."));
+    }
+
+    @Transactional
     public User createClient(User dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Já existe um usuário com este email.");
         }
-       
+        if (userRepository.existsByCpf(dto.getCpf())) {
+            throw new IllegalArgumentException("Já existe um usuário com este CPF.");
+        }
         return userRepository.save(dto);
     }
 
+    @Transactional
     public User updateClient(UUID clientId, User dto) {
-        User user = userRepository.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado."));
+        User user = getClientById(clientId);
 
         if (dto.getName() != null && !dto.getName().isBlank()) user.setName(dto.getName());
         if (dto.getEmail() != null && !dto.getEmail().isBlank()) user.setEmail(dto.getEmail());
@@ -99,11 +112,12 @@ public class AdminService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public void deleteClient(UUID clientId) {
-        User user = userRepository.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado."));
-        userRepository.delete(user);
+        User user = getClientById(clientId);
+        //soft delete, penas adesativa.
+        user.setActive(false);
+        userRepository.save(user);
     }
-
 }
 

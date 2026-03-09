@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import com.vanvan.enums.UserRole;
 import lombok.Getter;
 import lombok.Setter;
+
+import org.hibernate.annotations.SQLRestriction;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
+@SQLRestriction("active = true")
 public abstract class User implements UserDetails {
 
     @Id
@@ -27,12 +30,13 @@ public abstract class User implements UserDetails {
     @Column(nullable = false, length = 120)//nome obrigatorio
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false, length = 11)//cpf obrigatorio
     private String cpf;
 
+    @Column(nullable = false, length = 15)//telefone obrigatorio
     private String phone;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)//email obrigatorio
     private String email;
 
     private String password;
@@ -42,6 +46,9 @@ public abstract class User implements UserDetails {
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
+
+    @Column(nullable = false)
+    private boolean active = true;
 
     protected User() {
     }

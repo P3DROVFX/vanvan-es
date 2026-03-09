@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ import java.util.List;
 @Entity
 @Table(name = "passengers")
 @NoArgsConstructor//construtor vazio
+@SQLDelete(sql = "UPDATE user SET active = false WHERE id=?")
+@SQLRestriction("active = true")
 public class Passenger extends User {
 
 
