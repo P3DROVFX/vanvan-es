@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RatingService, Rating } from '../../services/rating.service';
 import { ToastService } from '../../components/toast/toast.service';
@@ -7,11 +7,11 @@ import { ToastService } from '../../components/toast/toast.service';
 @Component({
   selector: 'app-ratings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DecimalPipe, DatePipe],
   templateUrl: './ratings.html',
+  styleUrl: './ratings.css',
 })
 export class RatingsComponent implements OnInit {
-
   private ratingService = inject(RatingService);
   private toastService = inject(ToastService);
 
@@ -28,9 +28,26 @@ export class RatingsComponent implements OnInit {
     { label: 'Pendentes', value: 'unreviewed' },
   ];
 
+  // Computed stats
   totalPositivas = computed(() => this.listaAvaliacoes().filter(r => r.score > 3).length);
   totalNegativas = computed(() => this.listaAvaliacoes().filter(r => r.score <= 3).length);
   totalPendentes = computed(() => this.listaAvaliacoes().filter(r => !r.reviewed).length);
+
+  mediaGeral = computed(() => {
+    const lista = this.listaAvaliacoes();
+    if (!lista.length) return 0;
+    return lista.reduce((sum, r) => sum + r.score, 0) / lista.length;
+  });
+
+  // Contagem por filtro (para badge nos tabs)
+  getContagem(filtro: string): number {
+    switch (filtro) {
+      case 'all':        return this.listaAvaliacoes().length;
+      case 'negative':   return this.totalNegativas();
+      case 'unreviewed': return this.totalPendentes();
+      default:           return 0;
+    }
+  }
 
   ngOnInit() {
     this.carregarAvaliacoes();
@@ -64,10 +81,17 @@ export class RatingsComponent implements OnInit {
     this.carregarAvaliacoes();
   }
 
+  limparBusca() {
+    this.termoBusca.set('');
+    this.carregarAvaliacoes();
+  }
+
   marcarComoAnalisado(rating: Rating) {
     this.ratingService.marcarComoAnalisado(rating.id).subscribe({
       next: (atualizado) => {
-        const novaLista = this.listaAvaliacoes().map(r => r.id === atualizado.id ? atualizado : r);
+        const novaLista = this.listaAvaliacoes().map(r =>
+          r.id === atualizado.id ? atualizado : r
+        );
         this.listaAvaliacoes.set(novaLista);
         this.toastService.success('Avaliação marcada como analisada');
       },
@@ -79,7 +103,9 @@ export class RatingsComponent implements OnInit {
     if (confirm('Tem certeza que deseja ocultar este comentário de outros usuários?')) {
       this.ratingService.ocultarComentario(rating.id).subscribe({
         next: (atualizado) => {
-          const novaLista = this.listaAvaliacoes().map(r => r.id === atualizado.id ? atualizado : r);
+          const novaLista = this.listaAvaliacoes().map(r =>
+            r.id === atualizado.id ? atualizado : r
+          );
           this.listaAvaliacoes.set(novaLista);
           this.toastService.success('Comentário ocultado');
         },
@@ -88,7 +114,6 @@ export class RatingsComponent implements OnInit {
     }
   }
 
-  // Helper para gerar array de estrelas (ex: para iterar no template)
   getStarsArray(): number[] {
     return [1, 2, 3, 4, 5];
   }
