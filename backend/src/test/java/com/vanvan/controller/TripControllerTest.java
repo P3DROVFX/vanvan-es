@@ -1,8 +1,11 @@
 package com.vanvan.controller;
 
+import com.vanvan.config.security.JwtFilter;
+import com.vanvan.config.security.JwtService;
 import com.vanvan.dto.TripDetailsDTO;
 import com.vanvan.dto.UpdateTripStatusDTO;
 import com.vanvan.enums.TripStatus;
+import com.vanvan.repository.UserRepository;
 import com.vanvan.service.TripService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,6 +13,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -25,7 +30,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(TripController.class)
+@WebMvcTest(
+        controllers = TripController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = JwtFilter.class
+        )
+)
 class TripControllerTest {
 
     @Autowired
@@ -33,6 +44,12 @@ class TripControllerTest {
 
     @MockitoBean
     private TripService tripService;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserRepository userRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
@@ -80,7 +97,8 @@ class TripControllerTest {
         mockMvc.perform(patch("/api/trips/1/status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body))
-                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()))
+                        .with(org.springframework.security.test.web.servlet.request
+                                .SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk());
     }
 
