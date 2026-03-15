@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -105,16 +104,6 @@ class AdminControllerTest {
     }
 
     @Test
-    @DisplayName("Deve listar motoristas - Status 200")
-    void listDrivers_returns200() throws Exception {
-        when(adminService.listDrivers(any(), any())).thenReturn(new PageImpl<>(List.of()));
-        mockMvc.perform(get("/api/admin/drivers")
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     @DisplayName("Deve atualizar status do motorista - Status 200")
     void updateDriverStatus_returns200() throws Exception {
         DriverAdminResponseDTO dto = new DriverAdminResponseDTO(
@@ -145,12 +134,22 @@ class AdminControllerTest {
                         .content(body))
                 .andExpect(status().isOk());
     }
+    @Test
+    @DisplayName("Deve listar motoristas - Status 200")
+    void listDrivers_returns200() throws Exception {
+        when(adminService.listDrivers(any(), any()))
+                .thenReturn(org.springframework.data.domain.Page.empty());
+        mockMvc.perform(get("/api/admin/drivers")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk());
+    }
 
     @Test
     @DisplayName("Deve listar clientes - Status 200")
     void listClients_returns200() throws Exception {
         when(adminService.listClients(any(), any(), any(), any()))
-                .thenReturn(new PageImpl<>(List.of()));
+                .thenReturn(org.springframework.data.domain.Page.empty());
         mockMvc.perform(get("/api/admin/clients")
                         .param("page", "0")
                         .param("size", "10"))
