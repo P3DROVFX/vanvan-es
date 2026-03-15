@@ -116,4 +116,45 @@ class UserServiceTest {
                 LocalDate.now().minusYears(17));
         assertThrows(UnderageUserException.class, () -> userService.register(dto));
     }
+
+    @Test
+    @DisplayName("Deve registrar driver com sucesso")
+    void register_driver_success() {
+        DriverRegisterRequestDTO dto = new DriverRegisterRequestDTO(
+                "João", "joao@email.com", "senha123",
+                "52998224725", "81988888888", "driver",
+                LocalDate.of(1990, 1, 1), "12345678900");
+        dto.setPixKey("pix");
+        when(userRepository.findByEmail(anyString())).thenReturn(null);
+        when(userRepository.findByCpf(anyString())).thenReturn(null);
+        when(driverRepository.existsByCnh(anyString())).thenReturn(false);
+        when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+        when(driverRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        var result = userService.register(dto);
+        assertNotNull(result);
+        verify(driverRepository).save(any(Driver.class));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção para passageiro com CPF duplicado")
+    void register_cpfExists_passenger_throws() {
+        RegisterRequestDTO dto = new RegisterRequestDTO(
+                "Alice", "alice@email.com", "senha123",
+                "52998224725", "81988888888", "passenger",
+                LocalDate.of(2000, 1, 1));
+        when(userRepository.findByEmail(anyString())).thenReturn(null);
+        when(userRepository.findByCpf(anyString())).thenReturn(new Passenger());
+        assertThrows(CpfAlreadyExistsException.class, () -> userService.register(dto));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção para passageiro com email duplicado")
+    void register_emailExists_passenger_throws() {
+        RegisterRequestDTO dto = new RegisterRequestDTO(
+                "Alice", "alice@email.com", "senha123",
+                "52998224725", "81988888888", "passenger",
+                LocalDate.of(2000, 1, 1));
+        when(userRepository.findByEmail(anyString())).thenReturn(new Passenger());
+        assertThrows(EmailAlreadyExistsException.class, () -> userService.register(dto));
+    }
 }
