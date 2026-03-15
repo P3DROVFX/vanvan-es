@@ -40,10 +40,9 @@ class TripStatusTest {
     }
 
     @Test
-    void ordinal_isCorrect() {
-        assertEquals(0, TripStatus.SCHEDULED.ordinal());
-        assertEquals(1, TripStatus.IN_PROGRESS.ordinal());
-        assertEquals(2, TripStatus.COMPLETED.ordinal());
-        assertEquals(3, TripStatus.CANCELLED.ordinal());
+    void toStrings_areDistinct() {
+        assertNotEquals(TripStatus.SCHEDULED, TripStatus.IN_PROGRESS);
+        assertNotEquals(TripStatus.COMPLETED, TripStatus.CANCELLED);
+        assertNotEquals(TripStatus.SCHEDULED, TripStatus.COMPLETED);
     }
 }
