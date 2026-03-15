@@ -2,13 +2,8 @@ package com.vanvan.controller;
 
 import com.vanvan.dto.*;
 import org.springframework.web.bind.annotation.*;
-import com.vanvan.dto.DriverAdminResponseDTO;
-import com.vanvan.dto.DriverStatusUpdateDTO;
-import com.vanvan.dto.DriverUpdateDTO;
-import com.vanvan.dto.PricingUpdateDTO;
-import com.vanvan.model.Passenger;
+
 import com.vanvan.model.Pricing;
-import com.vanvan.model.User;
 import com.vanvan.enums.RegistrationStatus;
 import com.vanvan.service.AdminService;
 import com.vanvan.service.PricingService;
@@ -66,8 +61,8 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-   @GetMapping("/clients")
-    public ResponseEntity<Page<Passenger>> listClients(
+    @GetMapping("/clients")
+    public ResponseEntity<Page<ClientResponseDTO>> listClients(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String cpf,
             @RequestParam(required = false) String email,
@@ -76,12 +71,12 @@ public class AdminController {
     }
 
     @GetMapping("/clients/{id}")
-    public ResponseEntity<Passenger> getClientById(@PathVariable UUID id) {
-        return ResponseEntity.ok(adminService.getClientById(id));
+    public ResponseEntity<ClientResponseDTO> getClientById(@PathVariable UUID id) {
+        return ResponseEntity.ok(ClientResponseDTO.from(adminService.getClientById(id)));
     }
 
     @PostMapping("/clients")
-    public ResponseEntity<Object> createClient(@RequestBody User dto) {
+    public ResponseEntity<Object> createClient(@RequestBody ClientRequestDTO dto) {
         try {
             return ResponseEntity.ok(adminService.createClient(dto));
         } catch (IllegalArgumentException e) {
@@ -92,7 +87,7 @@ public class AdminController {
     @PutMapping("/clients/{id}")
     public ResponseEntity<Object> updateClient(
             @PathVariable UUID id,
-            @RequestBody User dto) {
+            @RequestBody ClientRequestDTO dto) {
         try {
             return ResponseEntity.ok(adminService.updateClient(id, dto));
         } catch (IllegalArgumentException e) {
