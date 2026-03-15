@@ -6,12 +6,14 @@ import com.vanvan.config.security.JwtService;
 import com.vanvan.model.Passenger;
 import com.vanvan.repository.UserRepository;
 import com.vanvan.service.UserService;
-import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +23,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +40,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 classes = JwtFilter.class
         )
 )
+@Import(AuthControllerTest.ValidatorConfig.class)
 class AuthControllerTest {
+
+    @Configuration
+    static class ValidatorConfig {
+        @Bean
+        public Validator validator() {
+            return Validation.buildDefaultValidatorFactory().getValidator();
+        }
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -45,7 +58,6 @@ class AuthControllerTest {
     @MockitoBean private UserService userService;
     @MockitoBean private JwtService jwtService;
     @MockitoBean private UserRepository userRepository;
-    @MockitoBean private Validator validator;
     @MockitoBean private ObjectMapper objectMapper;
 
     @Test
