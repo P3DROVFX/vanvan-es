@@ -63,7 +63,7 @@ export class ViagensMotorista {
       .filter(trip => trip.status === 'completed')
       .reduce((sum, trip) => {
         const value = parseFloat(trip.price.replace('R$', '').replace(',', '.'));
-        return sum + (value * (trip.passengers ?? 0));
+        return sum + value;
       }, 0);
     return `R$${total.toFixed(2).replace('.', ',')}`;
   }
@@ -78,15 +78,15 @@ export class ViagensMotorista {
       next: (response) => {
         this.pastTrips = response.content.map(trip => ({
           id: trip.id.toString(),
-          origin: trip.departureCity,
+          origin: trip.departureCity || '',
           originLocation: '---', // backend omit details on history list usually
           originReference: '',
-          destination: trip.arrivalCity,
+          destination: trip.arrivalCity || '',
           destinationLocation: '---',
           destinationReference: '',
           price: `R$${(trip.totalAmount || 0).toFixed(2).replace('.', ',')}`,
           distance: trip.route || 'N/A',
-          date: new Date(trip.date).toLocaleDateString('pt-BR'), // convert "YYYY-MM-DD" para "DD/MM/YYYY" conforme UI
+          date: trip.date ? trip.date.split('-').reverse().join('/') : '',
           time: trip.time,
           passengers: trip.passengerCount || 0,
           status: (trip.status === 'SCHEDULED' || trip.status === 'IN_PROGRESS')

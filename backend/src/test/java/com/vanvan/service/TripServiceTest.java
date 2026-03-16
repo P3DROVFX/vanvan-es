@@ -410,7 +410,9 @@ class TripServiceTest {
         when(tripRepository.findById(1L)).thenReturn(Optional.of(trip));
 
         Authentication auth = mock(Authentication.class);
-        when(auth.getPrincipal()).thenReturn(driverId);
+        com.vanvan.model.User user = mock(com.vanvan.model.User.class);
+        when(user.getId()).thenReturn(driverId);
+        when(auth.getPrincipal()).thenReturn(user);
         SecurityContext ctx = mock(SecurityContext.class);
         when(ctx.getAuthentication()).thenReturn(auth);
         SecurityContextHolder.setContext(ctx);
@@ -436,7 +438,9 @@ class TripServiceTest {
         )).thenReturn(new PageImpl<>(List.of()));
 
         Authentication auth = mock(Authentication.class);
-        when(auth.getPrincipal()).thenReturn(driverId);
+        com.vanvan.model.User user = mock(com.vanvan.model.User.class);
+        when(user.getId()).thenReturn(driverId);
+        when(auth.getPrincipal()).thenReturn(user);
         SecurityContext ctx = mock(SecurityContext.class);
         when(ctx.getAuthentication()).thenReturn(auth);
         SecurityContextHolder.setContext(ctx);
@@ -458,7 +462,9 @@ class TripServiceTest {
 
         UUID outroDriverId = UUID.randomUUID();
         Authentication auth = mock(Authentication.class);
-        when(auth.getPrincipal()).thenReturn(outroDriverId);
+        com.vanvan.model.User user = mock(com.vanvan.model.User.class);
+        when(user.getId()).thenReturn(outroDriverId);
+        when(auth.getPrincipal()).thenReturn(user);
         SecurityContext ctx = mock(SecurityContext.class);
         when(ctx.getAuthentication()).thenReturn(auth);
         SecurityContextHolder.setContext(ctx);

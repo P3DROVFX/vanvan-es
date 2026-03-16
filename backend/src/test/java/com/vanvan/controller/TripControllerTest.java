@@ -58,8 +58,7 @@ class TripControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void getTripById_returns200() throws Exception {
-        TripDetailsDTO dto = new TripDetailsDTO(
-                1L, LocalDate.now(), LocalTime.of(10, 0),
+        TripDetailsDTO dto = new TripDetailsDTO(1L, java.time.LocalDate.now(), java.time.LocalTime.now(), "João", java.util.List.of(), "São Paulo", "Rua A", "Ref A", "Rio de Janeiro", "Rua B", "Ref B", 4, 4, 1.5, 400.0, 300.0, 600.0, com.vanvan.enums.TripStatus.SCHEDULED), LocalTime.of(10, 0),
                 "Motorista", List.of(), "Caruaru", "Garanhuns",
                 1.5, 130.0, 90.0, 195.0, TripStatus.COMPLETED);
 
@@ -84,8 +83,7 @@ class TripControllerTest {
     @Test
     @WithMockUser(roles = "DRIVER")
     void updateStatus_returns200() throws Exception {
-        TripDetailsDTO dto = new TripDetailsDTO(
-                1L, LocalDate.now(), LocalTime.of(10, 0),
+        TripDetailsDTO dto = new TripDetailsDTO(1L, java.time.LocalDate.now(), java.time.LocalTime.now(), "João", java.util.List.of(), "São Paulo", "Rua A", "Ref A", "Rio de Janeiro", "Rua B", "Ref B", 4, 4, 1.5, 400.0, 300.0, 600.0, com.vanvan.enums.TripStatus.SCHEDULED), LocalTime.of(10, 0),
                 "Motorista", List.of(), "Caruaru", "Garanhuns",
                 1.5, 130.0, 90.0, 195.0, TripStatus.IN_PROGRESS);
 

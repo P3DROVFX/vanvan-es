@@ -150,6 +150,17 @@ export class OfertarViagem implements OnInit, OnDestroy {
 
     // Fetch real history
     this.fetchHistory();
+    this.setDefaultDate();
+  }
+
+  private setDefaultDate(): void {
+    if (!this.tripOffer.date) {
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const y = now.getFullYear();
+      this.tripOffer.date = `${d}/${m}/${y}`;
+    }
   }
 
   fetchHistory(): void {
@@ -188,9 +199,10 @@ export class OfertarViagem implements OnInit, OnDestroy {
   }
 
   private formatNominatimCity(city: string): string {
-    // Extracts just the city name (e.g. "Garanhuns" from "Garanhuns - PE")
-    // Nominatim works best with city name alone; backend already filters by countrycodes=br
-    return city.split(' - ')[0].trim();
+    // Extracts just the city name and removes accents (e.g. "Maceió" -> "Maceio")
+    // Nominatim works best with city name alone and without accents; backend already filters by countrycodes=br
+    const cityName = city.split(' - ')[0].trim();
+    return cityName.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
   }
 
   ngOnDestroy(): void {
@@ -228,6 +240,8 @@ export class OfertarViagem implements OnInit, OnDestroy {
 
   private loadVehiclesForUser(userId: string): void {
     this.isLoadingVehicles = true;
+
+    const user = this.authService.currentUser();
 
     this.vehicleService.getVehiclesByDriver(userId).subscribe({
       next: (response) => {
@@ -329,6 +343,10 @@ export class OfertarViagem implements OnInit, OnDestroy {
         this.errorMessage = 'Por favor, preencha todos os campos obrigatórios.';
         return;
       }
+      if (this.isDateInPast(this.tripOffer.date)) {
+        this.errorMessage = 'A data da viagem não pode ser no passado.';
+        return;
+      }
       this.errorMessage = '';
       this.currentStep = 'vehicles';
     } else if (this.currentStep === 'vehicles') {
@@ -374,9 +392,7 @@ export class OfertarViagem implements OnInit, OnDestroy {
       },
       passengerIds: [],
       driverId: this.authService.currentUser()?.id || '',
-      totalSeats: parseInt(this.tripOffer.availableSeats),
-      vehicleId: Number(this.tripOffer.selectedVehicleId),
-      status: 'SCHEDULED'
+      totalSeats: parseInt(this.tripOffer.availableSeats)
     }).subscribe({
       next: (trip) => {
         this.isLoading = false;
@@ -385,7 +401,11 @@ export class OfertarViagem implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Failed creating trip', err);
-        this.errorMessage = 'Falha ao criar a viagem.';
+        if (err.error?.message?.includes('A data da viagem deve ser hoje ou futura') || err.message?.includes('A data da viagem deve ser hoje ou futura')) {
+          this.errorMessage = 'A data da viagem deve ser hoje ou futura. Verifique se o dia não mudou.';
+        } else {
+          this.errorMessage = 'Falha ao criar a viagem.';
+        }
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -469,5 +489,14 @@ export class OfertarViagem implements OnInit, OnDestroy {
     }
 
     this.tripOffer.time = value.slice(0, 5);
+  }
+
+  private isDateInPast(dateStr: string): boolean {
+    if (!dateStr) return false;
+    const [day, month, year] = dateStr.split('/').map(Number);
+    const date = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
   }
 }

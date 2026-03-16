@@ -54,4 +54,8 @@ export class RatingService {
   getDriverMediaAvaliacao(): Observable<DriverAverageRating> {
     return this.http.get<DriverAverageRating>(`${this.apiUrl}/me/average`);
   }
+
+  enviarAvaliacao(payload: { tripId: number, score: number, comment: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}`, payload);
+  }
 }

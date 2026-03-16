@@ -135,6 +135,12 @@
               </div>
               <span class="text-body text-subtle-text leading-[1.2]">{{ currentTrip.distance }}</span>
             </div>
+            <div class="flex gap-[5px] items-center">
+              <div class="size-6 shrink-0 bg-subtle-text"
+                style="-webkit-mask: url(assets/icons/dollar-circle.svg) no-repeat center / contain; mask: url(assets/icons/dollar-circle.svg) no-repeat center / contain;">
+              </div>
+              <span class="text-body text-subtle-text leading-[1.2]">Passagem: R$ {{ currentTrip.pricePerSeat | number:'1.2-2' }}</span>
+            </div>
             <div class="flex flex-col">
               <span class="text-small text-text">Saída:</span>
               <div class="flex gap-[5px] items-center">
@@ -281,13 +287,6 @@
 
           <!-- Row 4: Botões de ação -->
           <div class="flex gap-2">
-            <button (click)="cancelCurrentTrip()"
-              class="glass-inner rounded-[12px] px-4 py-3 flex gap-2 items-center justify-center cursor-pointer hover:bg-white/60 transition-all">
-              <div class="size-4 bg-subtle-text"
-                style="-webkit-mask: url(assets/icons/close.svg) no-repeat center / contain; mask: url(assets/icons/close.svg) no-repeat center / contain;">
-              </div>
-              <span class="text-button-text text-subtle-text">CANCELAR</span>
-            </button>
 
             <button (click)="finishTrip()"
               class="glass-inner-strong rounded-[12px] px-4 py-3 flex gap-2 items-center justify-center cursor-pointer hover:opacity-90 transition-all flex-1"

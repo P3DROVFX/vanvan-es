@@ -1,23 +1,35 @@
 package com.vanvan.controller;
 
-import com.vanvan.dto.*;
-import com.vanvan.enums.TripStatus;
-import com.vanvan.model.User;
-import com.vanvan.service.TripService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDate;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.UUID;
+import com.vanvan.dto.CreateTripDTO;
+import com.vanvan.dto.TripDetailsDTO;
+import com.vanvan.dto.TripHistoryDTO;
+import com.vanvan.dto.TripMonitorDTO;
+import com.vanvan.dto.UpdateTripStatusDTO;
+import com.vanvan.enums.TripStatus;
+import com.vanvan.model.User;
+import com.vanvan.service.TripService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/trips")
@@ -46,12 +58,12 @@ public class TripController {
     ) {
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DRIVER"))) {
             // Força busca para o driver logado
-            UUID loggedUserId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UUID loggedUserId = ((User) userDetails).getId();
             driverId = loggedUserId;
         } else if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PASSENGER"))) {
             // Se for passageiro, só vê as próprias viagens buscando pelo histórico restrito dele
             // O ideal seria repassar pro TripService o passengerId para filtrar no Service
-            UUID passengerId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UUID passengerId = ((User) userDetails).getId();
             return tripService.getPassengerTripHistory(startDate, endDate, departureCity, arrivalCity, status, passengerId, pageable);
         }
 

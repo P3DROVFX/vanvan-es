@@ -109,10 +109,10 @@ export class Home implements OnDestroy {
   }
 
   private mapToUiTrip(dto: TripHistoryDTO, isFirst: boolean): any {
-    const dateObj = new Date(dto.date);
+    const [year, month, day] = dto.date ? dto.date.split("-") : ['2025', '01', '01']; const monthIndex = parseInt(month, 10) - 1;
     const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-    const monthStr = months[dateObj.getMonth()];
-    const dayStr = String(dateObj.getDate() + 1).padStart(2, '0'); // Basic timezone adjustment
+    const monthStr = months[monthIndex];
+    const dayStr = day;
 
     let variant: TagVariant = 'warning';
     let statusLabel = 'Aguardando';
@@ -244,8 +244,15 @@ export class Home implements OnDestroy {
 
   navigateToSearchTrips(): void {
     const queryParams: any = {};
-    if (this.partidaQuery) queryParams.departureCity = this.partidaQuery;
-    if (this.destinoQuery) queryParams.arrivalCity = this.destinoQuery;
+    
+    // helper to extract city before hyphen
+    const formatCity = (cityQuery: string) => {
+       if (!cityQuery) return '';
+       return cityQuery.split(' - ')[0].trim();
+    };
+
+    if (this.partidaQuery) queryParams.departureCity = formatCity(this.partidaQuery);
+    if (this.destinoQuery) queryParams.arrivalCity = formatCity(this.destinoQuery);
     if (this.dataViagem) queryParams.date = this.dataViagem;
     if (this.passageiros) queryParams.passengerCount = this.passageiros;
 

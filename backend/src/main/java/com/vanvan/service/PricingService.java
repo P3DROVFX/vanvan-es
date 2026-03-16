@@ -60,7 +60,7 @@ public class PricingService {
         Pricing pricing = new Pricing();
         pricing.setId(PRICING_ID);
         pricing.setMinimumFare(10.00);
-        pricing.setPerKmRate(1.50);
+        pricing.setPerKmRate(0.70);
         pricing.setCancellationFee(2.50);
         pricing.setCommissionRate(15.0);
         pricing.setLastUpdated(LocalDateTime.now());

@@ -38,23 +38,6 @@ export class SettingsService {
 
   constructor(private http: HttpClient) {}
 
-  // --- Trechos ---
-  listarTrechos(): Observable<Journey[]> {
-    return this.http.get<Journey[]>(`${this.API_URL}/routes`);
-  }
-
-  adicionarTrecho(trecho: Journey): Observable<Journey> {
-    return this.http.post<Journey>(`${this.API_URL}/routes`, trecho);
-  }
-
-  editarTrecho(id: number, trecho: Journey): Observable<Journey> {
-    return this.http.put<Journey>(`${this.API_URL}/routes/${id}`, trecho);
-  }
-
-  excluirTrecho(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/routes/${id}`);
-  }
-
   listarMotoristas(page = 0, size = 100): Observable<SpringPage<DriverOption>> {
     const params = new HttpParams()
       .set('page', page)

@@ -71,28 +71,46 @@ export class MotoristaPage implements OnInit, OnDestroy {
         }
 
         if (activeTrip) {
-          const dt = new Date(activeTrip.date);
-          const day = String(dt.getDate() + 1).padStart(2, '0');
-          const monthStr = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'][dt.getMonth()];
-          
-          this.currentTrip = {
-            id: activeTrip.id,
-            availableSeats: activeTrip.availableSeats,
-            confirmedPassengers: activeTrip.passengerCount,
-            origin: activeTrip.departureCity,
-            destination: activeTrip.arrivalCity,
-            distance: `0km`,
-            distanceNum: 0,
-            departureLocation: 'Rodoviária', // Fallback
-            arrivalLocation: 'Terminal', // Fallback
-            date: `${day} ${monthStr}`,
-            time: activeTrip.time,
-            pricePerSeat: activeTrip.totalAmount // fallback
-          };
-          this.tripStatus = activeTrip.status === 'IN_PROGRESS' ? 'in_progress' : 'scheduled';
+          // Fetch full trip details because TripHistoryDTO doesn't have availableSeats, distance, etc.
+          this.tripService.getTripDetails(activeTrip.id).subscribe({
+            next: (details) => {
+              const dt = new Date(details.date + 'T' + details.time);
+              const day = String(dt.getDate()).padStart(2, '0');
+              const monthStr = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'][dt.getMonth()];
+              
+              this.currentTrip = {
+                id: details.id,
+                availableSeats: (details as any).availableSeats ?? activeTrip.availableSeats ?? 4, // Real backend totalSeats now works
+                confirmedPassengers: details.passengers ? details.passengers.length : 0,
+                passengers: (details.passengers || []).map((p: any, index: number) => ({
+                    name: p.name || 'Passageiro',
+                    status: 'confirmed',
+                    seat: index + 1
+                })),
+                origin: details.departureCity,
+                destination: details.arrivalCity,
+                distance: `${details.distanceKm || 0}km`,
+                distanceNum: details.distanceKm || 0,
+                departureLocation: details.departureCity,
+                arrivalLocation: details.arrivalCity,
+                date: `${day} ${monthStr}`,
+                time: details.time?.substring(0, 5) || '00:00',
+                pricePerSeat: (details as any).perKmRate ? ((details.distanceKm || 0) * (details as any).perKmRate) : (details.totalAmount || 0)
+              };
+              this.tripStatus = details.status === 'IN_PROGRESS' ? 'in_progress' : 'scheduled';
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              console.error('Failed fetching trip details', err);
+              this.currentTrip = null;
+              this.tripStatus = 'none';
+              this.cdr.detectChanges();
+            }
+          });
         } else {
           this.currentTrip = null;
           this.tripStatus = 'none';
+          this.cdr.detectChanges();
         }
 
         // Set past trips dynamically
@@ -100,9 +118,9 @@ export class MotoristaPage implements OnInit, OnDestroy {
           .filter((t: any) => t.status === 'COMPLETED' || t.status === 'CANCELLED')
           .slice(0, 3)
           .map((trip: any) => {
-            const dt = new Date(trip.date);
-            const day = String(dt.getDate() + 1).padStart(2, '0');
-            const monthStr = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'][dt.getMonth()];
+            const [year, month, day] = trip.date.split('-');
+            const monthIndex = parseInt(month, 10) - 1;
+            const monthStr = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'][monthIndex];
             
             return {
               origin: trip.departureCity,
@@ -113,6 +131,16 @@ export class MotoristaPage implements OnInit, OnDestroy {
               time: trip.time
             };
           });
+
+        // Set dynamic report metrics based on API response
+        const completed = page.content.filter((t: any) => t.status === 'COMPLETED');
+        if (completed.length >= 0) {
+          const profitTotal = completed.reduce((sum: number, t: any) => sum + (t.totalAmount || 0), 0);
+          this.report.tripsCompleted = completed.length;
+          this.report.profit = `R$${profitTotal.toFixed(2).replace('.', ',')}`;
+        }
+          
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Failed fetching driver trip', err);
@@ -140,13 +168,7 @@ export class MotoristaPage implements OnInit, OnDestroy {
   currentTrip: any = null;
 
   // ===== Passengers (para viagem em andamento) =====
-  passengers = [
-    { name: 'Maria Silva', status: 'confirmed', seat: 1 },
-    { name: 'João Santos', status: 'confirmed', seat: 2 },
-    { name: 'Ana Costa', status: 'confirmed', seat: 3 },
-    { name: 'Pedro Lima', status: 'confirmed', seat: 4 },
-    { name: 'Carla Souza', status: 'confirmed', seat: 5 },
-  ];
+  get passengers() { return this.currentTrip?.passengers || []; }
 
   // ===== Quick Actions During Trip =====
   showEmergencyPopup = false;
@@ -171,6 +193,8 @@ export class MotoristaPage implements OnInit, OnDestroy {
     this.updateTripStatusOnBackend('CANCELLED', () => {
        this.resetTrip();
        this.toastService.success('Viagem cancelada com sucesso');
+       this.cdr.detectChanges();
+       this.fetchDriverNextTrip();
     });
   }
 
@@ -191,6 +215,8 @@ export class MotoristaPage implements OnInit, OnDestroy {
         this.elapsedTime++;
         this.updateTripProgress();
       }, 1000);
+      
+      this.cdr.detectChanges();
     });
   }
 
@@ -211,6 +237,7 @@ export class MotoristaPage implements OnInit, OnDestroy {
     if (!this.currentTrip) return;
     this.updateTripStatusOnBackend('COMPLETED', () => {
       this.tripStatus = 'completed';
+      this.cdr.detectChanges();
       this.tripProgress = 100;
       this.distanceTraveled = this.currentTrip.distance;
       this.distanceRemaining = '0km';
@@ -276,6 +303,7 @@ export class MotoristaPage implements OnInit, OnDestroy {
     if (this.tripProgress >= 90 && this.tripStatus === 'in_progress') {
       this.tripStatus = 'arriving';
     }
+    this.cdr.detectChanges();
   }
 
   private calculateEstimatedArrival(): string {

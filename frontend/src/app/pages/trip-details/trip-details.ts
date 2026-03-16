@@ -106,7 +106,7 @@ export class TripDetails implements OnInit {
       destinationReference: dto.arrivalReferencePoint || '-',
       date: `${day}/${month}/${year}`,
       time: dto.time,
-      price: `R$${dto.totalAmount.toFixed(2).replace('.', ',')}`,
+      price: `R$${(dto.perKmRate && dto.distanceKm ? dto.perKmRate * dto.distanceKm : dto.totalAmount).toFixed(2).replace('.', ',')}`,
       distance: `${dto.distanceKm} km`,
       duration: `${dto.durationMinutes} min`,
       availableSeats: dto.availableSeats,
