@@ -8,6 +8,7 @@ import { ToastService } from '../../components/toast/toast.service';
 import QRCode from 'qrcode';
 import { TripService, TripHistoryDTO } from '../../services/trip.service';
 import { Router } from '@angular/router';
+import { RatingService } from '../../services/rating.service';
 
 @Component({
   selector: 'app-viagens',
@@ -21,6 +22,7 @@ export class Viagens implements OnDestroy {
   private toastService = inject(ToastService);
   private tripService = inject(TripService);
   private router = inject(Router);
+  private ratingService = inject(RatingService);
 
   isLoading = true;
 
@@ -46,37 +48,44 @@ export class Viagens implements OnDestroy {
   }
 
   private fetchTrips(): void {
-    // 1. Upcoming Trips (status = SCHEDULED)
-    this.tripService.getTripHistory(undefined, undefined, undefined, undefined, undefined, 'SCHEDULED', 0, 10)
+    this.tripService.getTripHistory(undefined, undefined, undefined, undefined, undefined, undefined, 0, 50)
       .subscribe({
         next: (page) => {
-          const mapped = page.content.map(trip => this.mapToUiTrip(trip));
-          if (mapped.length > 0) {
-            this.nextTrip = mapped[0]; // Set first as main
-            this.scheduledTrips = mapped.slice(1); // Set rest as scheduled list
-            // Update countdown to first trip
-            this.startCustomCountdown(new Date(this.nextTrip.originalDate + 'T' + this.nextTrip.time));
+          const allTrips = page.content.map(trip => this.mapToUiTrip(trip));
+          
+          const pendingAndActive = allTrips.filter(t => ['SCHEDULED', 'IN_PROGRESS'].includes(t.originalStatus));
+          const completedAndCancelled = allTrips.filter(t => ['COMPLETED', 'CANCELLED'].includes(t.originalStatus));
+
+          if (pendingAndActive.length > 0) {
+            this.nextTrip = pendingAndActive[0];
+            this.scheduledTrips = pendingAndActive.slice(1);
+            
+            // Unmock vehicle info for next active trip
+            this.tripService.getTripDetails(this.nextTrip.id).subscribe({
+              next: (details) => {
+                this.nextTrip.vehicle = (details as any).vehicleModel || 'Carro';
+                this.nextTrip.plate = (details as any).vehiclePlate || 'XXXX';
+                this.nextTrip.driverRating = (details as any).driverRating || '5.0';
+                this.nextTrip.pickupPoint = details.departureReferencePoint || details.departureStreet || this.nextTrip.pickupPoint;
+                this.cdr.detectChanges();
+              }
+            });
+
+            if (this.nextTrip.originalStatus === 'SCHEDULED' && this.nextTrip.originalDate && this.nextTrip.time) {
+               this.startCustomCountdown(new Date(this.nextTrip.originalDate + 'T' + this.nextTrip.time));
+            } else {
+               this.countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+            }
           } else {
              this.nextTrip = null;
              this.scheduledTrips = [];
           }
-          this.checkLoadingState();
-        },
-        error: (err) => {
-          console.error('Failed to load upcoming trips', err);
-          this.checkLoadingState();
-        }
-      });
 
-    // 2. Past Trips (status = COMPLETED)
-    this.tripService.getTripHistory(undefined, undefined, undefined, undefined, undefined, 'COMPLETED', 0, 10)
-      .subscribe({
-        next: (page) => {
-          this.pastTrips = page.content.map(trip => this.mapToUiTrip(trip));
+          this.pastTrips = completedAndCancelled;
           this.checkLoadingState();
         },
         error: (err) => {
-          console.error('Failed to load past trips', err);
+          console.error('Failed to load trips', err);
           this.checkLoadingState();
         }
       });
@@ -88,10 +97,11 @@ export class Viagens implements OnDestroy {
   }
 
   private mapToUiTrip(dto: TripHistoryDTO): any {
-    const dateObj = new Date(dto.date);
+    const [year, month, day] = dto.date ? dto.date.split("-") : ['2025', '01', '01'];
+    const monthIndex = parseInt(month, 10) - 1;
     const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-    const monthStr = months[dateObj.getMonth()];
-    const dayStr = String(dateObj.getDate() + 1).padStart(2, '0');
+    const monthStr = months[monthIndex];
+    const dayStr = day;
 
     let variant: TagVariant = 'warning';
     let statusLabel = 'Aguardando';
@@ -120,17 +130,28 @@ export class Viagens implements OnDestroy {
       month: monthStr,
       day: dayStr,
       time: dto.time,
-      origin: dto.departureCity,
-      destination: dto.arrivalCity,
+      origin: (() => {
+        let name = dto.departureCity || dto.departureStreet;
+        if (!name && dto.route && dto.route.includes('->')) return dto.route.split('->')[0].trim();
+        return name || 'Origem';
+      })(),
+      destination: (() => {
+        let name = dto.arrivalCity || dto.arrivalStreet;
+        if (!name && dto.route && dto.route.includes('->')) return dto.route.split('->')[1].trim();
+        return name || 'Destino';
+      })(),
       price: `R$${dto.totalAmount.toFixed(2).replace('.', ',')}`,
-      vehicle: dto.route,
-      pickupPoint: 'Centro',
+      vehicle: 'Van',
+        plate: 'XXXX',
+        route: dto.route,
+      pickupPoint: dto.departureStreet || dto.departureCity || 'Centro',
       driverName: dto.driverName,
       driverContact: 'Contato via chat',
-      driverRating: 4.8,
+      driverRating: (dto as any).driverRating || '5.0',
       variant: variant,
       statusLabel: statusLabel,
-      originalDate: dto.date
+      originalDate: dto.date,
+      originalStatus: dto.status
     };
   }
 
@@ -179,7 +200,7 @@ export class Viagens implements OnDestroy {
 
   async openTicketPopup(trip: any): Promise<void> {
     this.ticketTripRef = trip;
-    this.showTicketPopup = true;
+    this.showTicketPopup = true; this.cdr.detectChanges();
 
     // Gerar QR Code
     const ticketData = JSON.stringify({
@@ -207,17 +228,17 @@ export class Viagens implements OnDestroy {
 
   closeTicketPopup(): void {
     this.showTicketPopup = false;
-    this.ticketTripRef = null;
+    this.ticketTripRef = null; this.cdr.detectChanges();
   }
 
   openCancelPopup(trip: any): void {
     this.cancelTripRef = trip;
-    this.showCancelPopup = true;
+    this.showCancelPopup = true; this.cdr.detectChanges();
   }
 
   closeCancelPopup(): void {
     this.showCancelPopup = false;
-    this.cancelTripRef = null;
+    this.cancelTripRef = null; this.cdr.detectChanges();
   }
 
   confirmCancelTrip(): void {
@@ -255,14 +276,14 @@ export class Viagens implements OnDestroy {
 
   openEvaluatePopup(trip: any): void {
     this.evaluateTripRef = trip;
-    this.showEvaluatePopup = true;
+    this.showEvaluatePopup = true; this.cdr.detectChanges();
     this.currentRating = 0; // reset
     this.currentComment = ''; // reset
   }
 
   closeEvaluatePopup(): void {
     this.showEvaluatePopup = false;
-    this.evaluateTripRef = null;
+    this.evaluateTripRef = null; this.cdr.detectChanges();
   }
 
   setRating(stars: number): void {
@@ -277,10 +298,26 @@ export class Viagens implements OnDestroy {
   }
 
   submitEvaluation(): void {
-    // TODO: integrate with backend
-    console.log('Avaliação enviada para a viagem:', this.evaluateTripRef, 'Nota:', this.currentRating, 'Comentário:', this.currentComment);
-    this.toastService.success('Avaliação enviada com sucesso!');
-    this.closeEvaluatePopup();
+    if (!this.evaluateTripRef || !this.evaluateTripRef.id || this.currentRating < 1) {
+       this.toastService.error('Selecione uma nota válida.');
+       return;
+    }
+
+    this.ratingService.enviarAvaliacao({
+       tripId: this.evaluateTripRef.id,
+       score: this.currentRating,
+       comment: this.currentComment
+    }).subscribe({
+       next: () => {
+         this.toastService.success('Avaliação enviada com sucesso!');
+         this.closeEvaluatePopup();
+       },
+       error: (err) => {
+         console.error('Falha ao enviar avaliação', err);
+         this.toastService.error('Não foi possível enviar a avaliação.');
+       }
+    });
+
   }
 
   nextTrip: any = null;

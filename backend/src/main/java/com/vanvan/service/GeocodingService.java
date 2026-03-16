@@ -32,14 +32,26 @@ public class GeocodingService {
                 .queryParam("q", cityName)
                 .queryParam("format", "json")
                 .queryParam("limit", 1)
-                .queryParam("countrycodes", "br") // restringe ao Brasil
+                .queryParam("countrycodes", "br")
                 .toUriString();
 
         try {
-            String response = restTemplate.getForObject(url, String.class);
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.set("User-Agent", "VanVan-App/1.0");
+            org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(headers);
+
+            org.springframework.http.ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    url,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+
+            String response = responseEntity.getBody();
             JsonNode results = objectMapper.readTree(response);
 
             if (results == null || results.isEmpty()) {
+                log.warn("Nominatim returned no results for city: {}", cityName);
                 throw new IllegalArgumentException("Cidade não encontrada no Nominatim: " + cityName);
             }
 
@@ -50,7 +62,8 @@ public class GeocodingService {
             log.info("Geocoding '{}' → lat={}, lon={}", cityName, lat, lon);
             return new double[]{lat, lon};
 
-        } catch (Exception _) {
+        } catch (Exception e) {
+            log.error("Error calling Nominatim for city: {}", cityName, e);
             throw new InvalidValueException("Erro ao consultar Nominatim para cidade: " + cityName);
         }
     }

@@ -8,15 +8,21 @@ export interface TripHistoryDTO {
   id: number;
   date: string;
   time: string;
-  departureCity: string;
-  arrivalCity: string;
+  departureCity?: string;
+  departureStreet?: string;
+  departureReference?: string;
+  arrivalCity?: string;
+  arrivalStreet?: string;
+  arrivalReference?: string;
   status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   route: string;
   driverName: string;
   passengerCount: number;
   totalSeats: number;
+  distanceKm?: number;
   availableSeats: number;
   totalAmount: number;
+  perKmRate?: number;
 }
 
 export interface TripDetailsDTO {
@@ -31,7 +37,7 @@ export interface TripDetailsDTO {
   arrivalReferencePoint: string;
   distanceKm: number;
   durationMinutes: number;
-  taxBykm: number;
+  perKmRate: number;
   totalAmount: number;
   status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   driverName: string;
@@ -61,10 +67,8 @@ export interface CreateTripDTO {
   arrival: LocationDTO;
   passengerIds: string[];
   driverId: string;
-  status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   totalSeats: number;
   perKmRate?: number;
-  vehicleId: number;
 }
 
 @Injectable({

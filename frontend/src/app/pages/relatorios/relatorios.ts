@@ -5,6 +5,11 @@ import { Tag, TagVariant } from '../../components/tags/tags';
 import { Toggle } from '../../components/toggle/toggle';
 import { Skeleton } from '../../components/skeleton/skeleton';
 import { RatingService } from '../../services/rating.service';
+import { TripService, TripHistoryDTO } from '../../services/trip.service';
+import { AdminService } from '../../services/admin.service';
+import { ClienteService } from '../../services/client.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface RecentTrip {
   date: string;
@@ -43,6 +48,9 @@ export interface RevenueMonth {
 export class Relatorios implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private ratingService = inject(RatingService);
+  private tripService = inject(TripService);
+  private adminService = inject(AdminService);
+  private clienteService = inject(ClienteService);
 
   driverRating = { averageScore: 0, totalRatings: 0 };
 
@@ -218,112 +226,7 @@ export class Relatorios implements OnInit {
     weeklyDigest: true,
   };
 
-  recentTrips: RecentTrip[] = [
-    {
-      date: '06/03',
-      origin: 'Recife',
-      destination: 'Garanhuns',
-      driver: 'Manoel Pedro',
-      status: 'Em andamento',
-      variant: 'info',
-      vehicle: 'Van Renault Master',
-      price: 'R$ 45,00',
-      passengers: 12,
-      capacity: 15,
-      licensePlate: 'ABC-1234',
-    },
-    {
-      date: '06/03',
-      origin: 'Garanhuns',
-      destination: 'Recife',
-      driver: 'Carlos Silva',
-      status: 'Confirmado',
-      variant: 'success',
-      vehicle: 'Sprinter 415 CDI',
-      price: 'R$ 40,00',
-      passengers: 15,
-      capacity: 15,
-      licensePlate: 'XYZ-9876',
-    },
-    {
-      date: '06/03',
-      origin: 'Caruaru',
-      destination: 'Recife',
-      driver: 'Ana Souza',
-      status: 'Aguardando',
-      variant: 'warning',
-      vehicle: 'Fiat Ducato',
-      price: 'R$ 35,00',
-      passengers: 8,
-      capacity: 16,
-      licensePlate: 'DEF-5555',
-    },
-    {
-      date: '05/03',
-      origin: 'Recife',
-      destination: 'Garanhuns',
-      driver: 'Pedro Lima',
-      status: 'Finalizado',
-      variant: 'success',
-      vehicle: 'Van Renault Master',
-      price: 'R$ 40,00',
-      passengers: 14,
-      capacity: 15,
-      licensePlate: 'GHI-9999',
-    },
-    {
-      date: '05/03',
-      origin: 'Petrolina',
-      destination: 'Recife',
-      driver: 'Maria Oliveira',
-      status: 'Cancelado',
-      variant: 'error',
-      vehicle: 'Ford Transit',
-      price: 'R$ 85,00',
-      passengers: 0,
-      capacity: 14,
-      licensePlate: 'JKL-1111',
-    },
-    {
-      date: '04/03',
-      origin: 'João Pessoa',
-      destination: 'Recife',
-      driver: 'José Santos',
-      status: 'Finalizado',
-      variant: 'success',
-      vehicle: 'Sprinter 515',
-      price: 'R$ 50,00',
-      passengers: 18,
-      capacity: 18,
-      licensePlate: 'MNO-2222',
-    },
-    {
-      date: '04/03',
-      origin: 'Garanhuns',
-      destination: 'Caruaru',
-      driver: 'Carlos Silva',
-      status: 'Finalizado',
-      variant: 'success',
-      vehicle: 'Sprinter 415 CDI',
-      price: 'R$ 25,00',
-      passengers: 10,
-      capacity: 15,
-      licensePlate: 'XYZ-9876',
-    },
-    {
-      date: '03/03',
-      origin: 'Garanhuns',
-      destination: 'Caruaru',
-      driver: 'Carlos Silva',
-      status: 'Cancelado',
-      variant: 'error',
-      vehicle: 'Sprinter 2020',
-      price: 'R$ 25,00',
-      passengers: 0,
-      capacity: 16,
-      licensePlate: 'PQR-3333',
-    },
-  ];
+  recentTrips: RecentTrip[] = [];
 
   isRecentTripsModalOpen = false;
   modalOrigin = { x: 0, y: 0, w: 0, h: 0 };
@@ -360,6 +263,11 @@ closeRecentTripsModal() {
   }
 
   ngOnInit() {
+    this.fetchDriverRating();
+    this.fetchAllData();
+  }
+
+  private fetchDriverRating() {
     this.ratingService.getDriverMediaAvaliacao().subscribe({
       next: (rating) => {
         this.driverRating = rating;
@@ -368,5 +276,163 @@ closeRecentTripsModal() {
         console.error('Erro ao buscar notas do motorista:', err);
       }
     });
+  }
+
+  private fetchAllData() {
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
+    forkJoin({
+      tripsPage: this.tripService.getTripHistory(undefined, undefined, undefined, undefined, undefined, undefined, 0, 1000).pipe(catchError(() => of({ content: [], totalElements: 0 }))),
+      driversPage: this.adminService.listDrivers(undefined, 0, 1000).pipe(catchError(() => of({ content: [], totalElements: 0 }))),
+      clients: this.clienteService.listar(0, 1000).pipe(catchError(() => of([])))
+    }).subscribe({
+      next: (data) => {
+        this.processTrips(data.tripsPage.content);
+        this.processDrivers(data.driversPage.content);
+        this.processClients(data.clients);
+        
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching dashboard data', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private processTrips(trips: TripHistoryDTO[]) {
+    // 1. Status Counts
+    this.statusCounts = {
+      confirmado: trips.filter(t => t.status === 'SCHEDULED').length,
+      aguardando: trips.filter(t => t.status === 'IN_PROGRESS').length, // Mocking progress as awaiting for UI
+      cancelado: trips.filter(t => t.status === 'CANCELLED').length,
+      finalizado: trips.filter(t => t.status === 'COMPLETED').length
+    };
+
+    // 2. Recent Trips Table
+    this.recentTrips = trips.slice(0, 15).map(t => this.mapToRecentTrip(t));
+
+    // 3. KPIs
+    const completedTrips = trips.filter(t => t.status === 'COMPLETED');
+    const totalRevenue = completedTrips.reduce((sum, t) => sum + (t.totalAmount || 0), 0);
+    
+    this.kpis.revenue = {
+      value: `R$ ${totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
+      change: 0 // Could calculate if we had previous month data
+    };
+    this.kpis.trips = { value: trips.length.toString(), change: 0 };
+
+    // 4. Revenue Months (grouping by month)
+    const monthMap = new Map<string, number>();
+    const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+    
+    completedTrips.forEach(t => {
+      const date = new Date(t.date + 'T00:00:00');
+      const monthLabel = months[date.getMonth()];
+      monthMap.set(monthLabel, (monthMap.get(monthLabel) || 0) + (t.totalAmount || 0));
+    });
+
+    // Take last 4 months that have data or defaults
+    const currentMonthIdx = new Date().getMonth();
+    this.revenueMonths = [];
+    for (let i = 3; i >= 0; i--) {
+       const idx = (currentMonthIdx - i + 12) % 12;
+       const label = months[idx];
+       const val = monthMap.get(label) || 0;
+       this.revenueMonths.push({
+          label: label,
+          value: val,
+          display: val >= 1000 ? (val / 1000).toFixed(1) + 'K' : val.toString()
+       });
+    }
+
+    // 5. Popular Routes
+    const routeMap = new Map<string, number>();
+    trips.forEach(t => {
+      const key = `${t.departureCity || '---'} -> ${t.arrivalCity || '---'}`;
+      routeMap.set(key, (routeMap.get(key) || 0) + 1);
+    });
+
+    this.popularRoutes = Array.from(routeMap.entries())
+      .map(([route, count]) => {
+        const [origin, destination] = route.split(' -> ');
+        return { origin, destination, count, trend: 0 };
+      })
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // 6. Occupancy Rate
+    if (completedTrips.length > 0) {
+      const totalSeats = completedTrips.reduce((sum, t) => sum + (t.totalSeats || 15), 0);
+      const totalPassengers = completedTrips.reduce((sum, t) => sum + (t.passengerCount || 0), 0);
+      this.occupancyRate = Math.round((totalPassengers / totalSeats) * 100);
+    } else {
+      this.occupancyRate = 0;
+    }
+    this.gaugeSegments = this.buildGauge();
+
+    // 7. Funnel Data
+    const confirmedCount = trips.filter(t => ['SCHEDULED', 'IN_PROGRESS', 'COMPLETED'].includes(t.status)).length;
+    this.funnelData = [
+      { label: 'Solicitadas', count: trips.length, color: 'bg-dark' },
+      { label: 'Confirmadas', count: confirmedCount, color: 'bg-secondary' },
+      { label: 'Realizadas', count: completedTrips.length, color: 'bg-tetiary' },
+    ];
+  }
+
+  private processDrivers(drivers: any[]) {
+    this.driverCounts = {
+      ativos: drivers.filter(d => d.registrationStatus === 'APPROVED').length,
+      aguardando: drivers.filter(d => d.registrationStatus === 'PENDING').length,
+      rejeitados: drivers.filter(d => d.registrationStatus === 'REJECTED').length,
+    };
+    this.kpis.drivers = { value: this.driverCounts.ativos.toString(), change: 0 };
+  }
+
+  private processClients(clients: any[]) {
+    this.kpis.clients = { value: clients.length.toString(), change: 0 };
+  }
+
+  private mapToRecentTrip(dto: TripHistoryDTO): RecentTrip {
+    const [year, month, day] = dto.date ? dto.date.split("-") : ['2025', '01', '01'];
+    
+    let variant: TagVariant = 'warning';
+    let statusLabel = 'Aguardando';
+
+    switch (dto.status) {
+      case 'SCHEDULED':
+        variant = 'warning';
+        statusLabel = 'Confirmado';
+        break;
+      case 'IN_PROGRESS':
+        variant = 'info';
+        statusLabel = 'Em andamento';
+        break;
+      case 'COMPLETED':
+        variant = 'success';
+        statusLabel = 'Finalizado';
+        break;
+      case 'CANCELLED':
+        variant = 'error';
+        statusLabel = 'Cancelado';
+        break;
+    }
+
+    return {
+      date: `${day}/${month}`,
+      origin: dto.departureCity || '---',
+      destination: dto.arrivalCity || '---',
+      driver: dto.driverName || '---',
+      status: statusLabel,
+      variant: variant,
+      vehicle: 'Van',
+      price: `R$ ${(dto.totalAmount || 0).toFixed(2).replace('.', ',')}`,
+      passengers: dto.passengerCount || 0,
+      capacity: dto.totalSeats || 15,
+      licensePlate: '---'
+    };
   }
 }

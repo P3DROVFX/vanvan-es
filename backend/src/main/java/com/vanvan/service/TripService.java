@@ -1,6 +1,26 @@
 package com.vanvan.service;
 
-import com.vanvan.dto.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.vanvan.dto.CreateTripDTO;
+import com.vanvan.dto.TripDetailsDTO;
+import com.vanvan.dto.TripHistoryDTO;
+import com.vanvan.dto.TripMonitorDTO;
 import com.vanvan.enums.TripStatus;
 import com.vanvan.exception.DriverNotFoundException;
 import com.vanvan.exception.InvalidStatusTransitionException;
@@ -13,18 +33,8 @@ import com.vanvan.repository.DriverRepository;
 import com.vanvan.repository.PassengerRepository;
 import com.vanvan.repository.TripRepository;
 import com.vanvan.repository.TripSpecification;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -61,19 +71,27 @@ public class TripService {
         // 2. Calcula rota via OSRM
         RoutingService.RouteResult route = routingService.calculateRoute(originCoords, destinationCoords);
 
-        // 3. Verifica tarifa do motorista
+        // 3. Verifica tarifa do motorista (prioridade: DTO > Driver Default > System Pricing)
         Pricing pricing = pricingService.getPricing();
         double baseRate = pricing.getPerKmRate();
+        
+        // Pega a tarifa (priorizando DTO, depois Driver, depois Sistema)
+        double perKmRate = (dto.getPerKmRate() != null && dto.getPerKmRate() > 0)
+                ? dto.getPerKmRate()
+                : (driver.getRatePerKm() != null && driver.getRatePerKm() > 0)
+                ? driver.getRatePerKm()
+                : baseRate;
+
+        // Mantém a validação de faixa solicitada (0.8x a 1.3x da base)
         double minRate = baseRate * 0.8;
         double maxRate = baseRate * 1.3;
-        double perKmRate = dto.getPerKmRate() != null ? dto.getPerKmRate() : baseRate;
 
         if (perKmRate < minRate || perKmRate > maxRate) {
             throw new IllegalArgumentException(String.format("A tarifa deve estar entre %.2f e %.2f", minRate, maxRate));
         }
 
         // 4. Calcula totalAmount (estimativa inicial se vier sem passageiros)
-        double totalAmount = getTotalAmount(dto, route, pricing);
+        double totalAmount = getTotalAmount(dto, route, pricing, driver);
 
         // 4. Monta e salva a Trip
         Trip trip = new Trip();
@@ -115,19 +133,22 @@ public class TripService {
      * Se não definir, usa o perKmRate padrão do Pricing.
      * O minimumFare do Pricing sempre é respeitado como piso mínimo por passageiro.
      */
-    private double getTotalAmount(CreateTripDTO dto, RoutingService.RouteResult route, Pricing pricing) {
-        double perKmRate = dto.getPerKmRate() != null
+    private double getTotalAmount(CreateTripDTO dto, RoutingService.RouteResult route, Pricing pricing, com.vanvan.model.Driver driver) {
+        double perKmRate = (dto.getPerKmRate() != null && dto.getPerKmRate() > 0)
                 ? dto.getPerKmRate()
+                : (driver.getRatePerKm() != null && driver.getRatePerKm() > 0)
+                ? driver.getRatePerKm()
                 : pricing.getPerKmRate();
 
-        // garante que viagens curtas não fiquem abaixo do mínimo
-        double pricePerPassenger = Math.max(
+        // Calculate unit price per seat
+        double pricePerSeat = Math.max(
                 pricing.getMinimumFare(),
                 perKmRate * route.distanceKm()
         );
 
+        // Total amount is the sum of all passenger fares (current count)
         int passengerCount = (dto.getPassengerIds() != null) ? dto.getPassengerIds().size() : 0;
-        return pricePerPassenger * passengerCount;
+        return pricePerSeat * passengerCount;
     }
 
     public void recalculateTripTotalAmount(Trip trip) {
@@ -152,9 +173,9 @@ public class TripService {
             throw new IllegalArgumentException("Não há assentos disponíveis para esta viagem.");
         }
 
-        UUID passengerId = (UUID) Objects.requireNonNull(SecurityContextHolder.getContext()
+        UUID passengerId = ((com.vanvan.model.User) Objects.requireNonNull(SecurityContextHolder.getContext()
                         .getAuthentication())
-                .getPrincipal();
+                .getPrincipal()).getId();
 
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passageiro não encontrado"));
@@ -176,9 +197,9 @@ public class TripService {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new TripNotFoundException(tripId.toString()));
 
-        UUID passengerId = (UUID) Objects.requireNonNull(SecurityContextHolder.getContext()
+        UUID passengerId = ((com.vanvan.model.User) Objects.requireNonNull(SecurityContextHolder.getContext()
                         .getAuthentication())
-                .getPrincipal();
+                .getPrincipal()).getId();
 
         Passenger passenger = passengerRepository.findById(passengerId)
                 .orElseThrow(() -> new IllegalArgumentException("Passageiro não encontrado"));
@@ -205,9 +226,9 @@ public class TripService {
                 .orElseThrow(() -> new TripNotFoundException(tripId.toString()));
 
         // extrai o driverId do token JWT via SecurityContext
-        UUID driverId = (UUID) Objects.requireNonNull(SecurityContextHolder.getContext()
+        UUID driverId = ((com.vanvan.model.User) Objects.requireNonNull(SecurityContextHolder.getContext()
                         .getAuthentication())
-                .getPrincipal();
+                .getPrincipal()).getId();
 
         if (!trip.getDriver().getId().equals(driverId)) {
             throw new AccessDeniedException("Você não tem permissão para atualizar esta viagem");
@@ -306,9 +327,19 @@ public class TripService {
         return new TripHistoryDTO(
                 trip.getId(),
                 trip.getDate(),
+                trip.getTime(),
                 trip.getDriver().getName(),
+                trip.getDeparture().getCity(),
+                trip.getDeparture().getStreet(),
+                trip.getDeparture().getReferencePoint(),
+                trip.getArrival().getCity(),
+                trip.getArrival().getStreet(),
+                trip.getArrival().getReferencePoint(),
                 route,
                 trip.getPassengers().size(),
+                trip.getAvailableSeats(),
+                trip.getTotalSeats(),
+                trip.getDistanceKm(),
                 trip.getTotalAmount(),
                 trip.getStatus()
         );

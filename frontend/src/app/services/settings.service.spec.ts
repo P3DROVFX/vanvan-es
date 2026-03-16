@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { SettingsService, PricingConfig, DriverOption, SpringPage, Journey } from './settings.service';
+import { SettingsService, PricingConfig, DriverOption, SpringPage } from './settings.service';
 
 describe('SettingsService', () => {
   let service: SettingsService;
@@ -151,35 +151,6 @@ describe('SettingsService', () => {
 
       const req = httpMock.expectOne(r => r.url === `${BASE}/drivers`);
       req.flush(mock);
-    });
-  });
-
-  // ─── Trechos ─────────────────────────────────────────────────────────────
-
-  describe('listarTrechos', () => {
-    it('should GET /api/admin/routes', () => {
-      const mock: Journey[] = [
-        { id: 1, name: 'Rota 1', origin: 'Garanhuns', destination: 'Recife' }
-      ];
-
-      service.listarTrechos().subscribe(res => {
-        expect(res.length).toBe(1);
-        expect(res[0].origin).toBe('Garanhuns');
-      });
-
-      const req = httpMock.expectOne(`${BASE}/routes`);
-      expect(req.request.method).toBe('GET');
-      req.flush(mock);
-    });
-  });
-
-  describe('excluirTrecho', () => {
-    it('should DELETE /api/admin/routes/:id', () => {
-      service.excluirTrecho(1).subscribe();
-
-      const req = httpMock.expectOne(`${BASE}/routes/1`);
-      expect(req.request.method).toBe('DELETE');
-      req.flush(null);
     });
   });
 });

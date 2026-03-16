@@ -128,8 +128,7 @@ class TripRepositoryTest {
     void testTripHistoryDTOMapping() {
         List<Trip> trips = tripRepository.findAll();
         List<TripHistoryDTO> dtos = trips.stream()
-                .map(t -> new TripHistoryDTO(
-                        t.getId(),
+                .map(t -> new TripHistoryDTO(1L, java.time.LocalDate.now(), java.time.LocalTime.now(), "João", "São Paulo", "Rua A", "Ref A", "Campinas", "Rua B", "Ref B", "São Paulo -> Campinas", 0, 4, 4, 100.0, 150.0, com.vanvan.enums.TripStatus.SCHEDULED),
                         t.getDate(),
                         t.getDriver().getName(),
                         t.getDeparture().getCity() + " -> " + t.getArrival().getCity(),

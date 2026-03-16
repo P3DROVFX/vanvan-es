@@ -16,6 +16,10 @@ import {
   Legend,
   Filler
 } from 'chart.js';
+import { TripService, TripHistoryDTO } from '../../services/trip.service';
+import { AuthService } from '../../services/auth.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { inject } from '@angular/core';
 
 // Register Chart.js components
 Chart.register(
@@ -40,6 +44,11 @@ Chart.register(
 })
 export class Faturamento implements OnInit {
   isBrowser = false;
+  isLoading = false;
+
+  private tripService = inject(TripService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(
     private router: Router,
@@ -51,13 +60,13 @@ export class Faturamento implements OnInit {
 
   // ===== Summary Data =====
   summary = {
-    totalMonth: 4520.00,
-    totalWeek: 1280.00,
-    totalToday: 180.00,
-    tripsMonth: 32,
-    tripsWeek: 9,
+    totalMonth: 0,
+    totalWeek: 0,
+    totalToday: 0,
+    tripsMonth: 0,
+    tripsWeek: 0,
     avgRating: 4.8,
-    percentChange: 12.5
+    percentChange: 0
   };
 
   // ===== Block Chart Data (stacked blocks per month — equal size, faded opacity) =====
@@ -105,14 +114,14 @@ export class Faturamento implements OnInit {
 
   // ===== Quick Metrics =====
   metrics = {
-    totalKm: 7360,
-    totalPassengers: 384,
-    avgPerTrip: 141.25,
-    totalHours: 96,
-    maxKm: 10000,
-    maxPassengers: 500,
-    maxPerTrip: 200,
-    maxHours: 160,
+    totalKm: 0,
+    totalPassengers: 0,
+    avgPerTrip: 0,
+    totalHours: 0,
+    maxKm: 5000,
+    maxPassengers: 200,
+    maxPerTrip: 150,
+    maxHours: 100,
   };
 
   // ===== Efficiency Ring =====
@@ -128,38 +137,33 @@ export class Faturamento implements OnInit {
 
   // ===== Peak Hours (flattened for 4x4 grid = 16 items) =====
   peakHours = [
-    { label: '06h', intensity: 20 },
-    { label: '08h', intensity: 85 },
-    { label: '10h', intensity: 40 },
-    { label: '12h', intensity: 55 },
-    { label: '07h', intensity: 45 },
-    { label: '09h', intensity: 70 },
-    { label: '11h', intensity: 30 },
-    { label: '13h', intensity: 35 },
-    { label: '14h', intensity: 50 },
-    { label: '16h', intensity: 90 },
-    { label: '18h', intensity: 80 },
-    { label: '20h', intensity: 25 },
-    { label: '15h', intensity: 60 },
-    { label: '17h', intensity: 100 },
-    { label: '19h', intensity: 45 },
-    { label: '21h', intensity: 15 },
+    { label: '06h', intensity: 0 },
+    { label: '08h', intensity: 0 },
+    { label: '10h', intensity: 0 },
+    { label: '12h', intensity: 0 },
+    { label: '07h', intensity: 0 },
+    { label: '09h', intensity: 0 },
+    { label: '11h', intensity: 0 },
+    { label: '13h', intensity: 0 },
+    { label: '14h', intensity: 0 },
+    { label: '16h', intensity: 0 },
+    { label: '18h', intensity: 0 },
+    { label: '20h', intensity: 0 },
+    { label: '15h', intensity: 0 },
+    { label: '17h', intensity: 0 },
+    { label: '19h', intensity: 0 },
+    { label: '21h', intensity: 0 },
   ];
 
   // ===== Earnings by Type =====
   earningsByType = [
-    { label: 'Passageiros', value: 3200, percent: 71, color: '#F66B0E' },
-    { label: 'Encomendas', value: 820, percent: 18, color: '#557D96' },
-    { label: 'Frete', value: 500, percent: 11, color: '#31D0AA' },
+    { label: 'Passageiros', value: 0, percent: 100, color: '#F66B0E' },
+    { label: 'Encomendas', value: 0, percent: 0, color: '#557D96' },
+    { label: 'Frete', value: 0, percent: 0, color: '#31D0AA' },
   ];
 
   // ===== Recent Trips =====
-  recentTrips = [
-    { route: 'Garanhuns → Recife', date: 'Hoje, 14:30', earnings: 180.00, passengers: 12 },
-    { route: 'Recife → Garanhuns', date: 'Ontem, 16:00', earnings: 175.00, passengers: 8 },
-    { route: 'Garanhuns → Caruaru', date: '03/03, 08:00', earnings: 95.00, passengers: 10 },
-    { route: 'Caruaru → Recife', date: '02/03, 09:00', earnings: 130.00, passengers: 14 },
-  ];
+  recentTrips: any[] = [];
 
   // ===== Monthly Comparison =====
   monthComparison = [
@@ -203,11 +207,7 @@ export class Faturamento implements OnInit {
 
   // ===== Destinations Data (top 3 only for visual legend) =====
   activeDestination: string | null = null;
-  destinations = [
-    { id: 'vila-velha', name: 'Vila Velha', percent: 65, color: '#557D96' },
-    { id: 'recife', name: 'Recife', percent: 45, color: '#F66B0E' },
-    { id: 'caruaru', name: 'Caruaru', percent: 15, color: '#31D0AA' },
-  ];
+  destinations: any[] = [];
 
   // ===== Line Chart — Monthly Revenue =====
   lineChartData: ChartData<'line'> = {
@@ -420,7 +420,195 @@ export class Faturamento implements OnInit {
   selectedPeriod: 'week' | 'month' | 'year' = 'month';
 
   ngOnInit(): void {
-    // Load data from backend when available
+    this.fetchDriverTrips();
+  }
+
+  private fetchDriverTrips(): void {
+    this.isLoading = true;
+    const user = this.authService.currentUser();
+    if (!user || !user.id) {
+       this.isLoading = false;
+       return;
+    }
+
+    this.tripService.getTripHistory(undefined, undefined, user.id, undefined, undefined, undefined, 0, 500).subscribe({
+      next: (page) => {
+        this.processTrips(page.content);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching driver faturamento', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private processTrips(trips: TripHistoryDTO[]): void {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    
+    // Calculate week start (Sunday)
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+
+    const completedTrips = trips.filter(t => t.status === 'COMPLETED');
+
+    // 1. Summary
+    let monthTotal = 0;
+    let weekTotal = 0;
+    let todayTotal = 0;
+    let monthCount = 0;
+    let weekCount = 0;
+
+    completedTrips.forEach(t => {
+      const tripDate = new Date(t.date + 'T00:00:00');
+      const amount = t.totalAmount || 0;
+
+      if (t.date === todayStr) todayTotal += amount;
+      if (tripDate >= weekStart) {
+        weekTotal += amount;
+        weekCount++;
+      }
+      if (tripDate.getMonth() === now.getMonth() && tripDate.getFullYear() === now.getFullYear()) {
+        monthTotal += amount;
+        monthCount++;
+      }
+    });
+
+    this.summary = {
+      ...this.summary,
+      totalMonth: monthTotal,
+      totalWeek: weekTotal,
+      totalToday: todayTotal,
+      tripsMonth: monthCount,
+      tripsWeek: weekCount
+    };
+
+    // 2. Metrics
+    const totalKm = completedTrips.reduce((sum, t) => sum + (t.distanceKm || 0), 0);
+    const totalPass = completedTrips.reduce((sum, t) => sum + (t.passengerCount || 0), 0);
+    const totalHours = completedTrips.length * 2.5; // Mocking duration if not available (e.g., 2.5h avg)
+
+    this.metrics = {
+      ...this.metrics,
+      totalKm: Math.round(totalKm),
+      totalPassengers: totalPass,
+      avgPerTrip: monthCount > 0 ? monthTotal / monthCount : 0,
+      totalHours: Math.round(totalHours),
+      maxKm: Math.max(5000, totalKm * 1.5),
+      maxPassengers: Math.max(200, totalPass * 1.5),
+      maxHours: Math.max(100, totalHours * 1.5)
+    };
+
+    // 3. Peak Hours
+    const hourCounts = new Array(24).fill(0);
+    trips.forEach(t => {
+      if (t.time) {
+        const hour = parseInt(t.time.split(':')[0]);
+        hourCounts[hour]++;
+      }
+    });
+    const maxHour = Math.max(...hourCounts) || 1;
+    this.peakHours = this.peakHours.map(ph => {
+      const h = parseInt(ph.label);
+      return { ...ph, intensity: Math.round((hourCounts[h] / maxHour) * 100) };
+    });
+
+    // 4. Destinations
+    const destMap = new Map<string, number>();
+    trips.forEach(t => {
+      if (t.arrivalCity) {
+        destMap.set(t.arrivalCity, (destMap.get(t.arrivalCity) || 0) + 1);
+      }
+    });
+    const sortedDests = Array.from(destMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+    
+    const colors = ['#F66B0E', '#557D96', '#31D0AA'];
+    this.destinations = sortedDests.map(([name, count], i) => ({
+      id: name.toLowerCase().replace(/\s+/g, '-'),
+      name,
+      percent: Math.round((count / trips.length) * 100),
+      color: colors[i % colors.length]
+    }));
+
+    // Update Doughnut Chart
+    this.doughnutChartData = {
+      labels: sortedDests.map(d => d[0]),
+      datasets: [{
+        ...this.doughnutChartData.datasets[0],
+        data: sortedDests.map(d => Math.round((d[1] / trips.length) * 100)),
+        backgroundColor: colors.slice(0, sortedDests.length)
+      }]
+    };
+
+    // 5. Monthly Revenue Chart (Line)
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const revenueByMonth = new Array(12).fill(0);
+    completedTrips.forEach(t => {
+       const d = new Date(t.date + 'T00:00:00');
+       revenueByMonth[d.getMonth()] += (t.totalAmount || 0);
+    });
+
+    // Show last 8 months
+    const currentMonth = now.getMonth();
+    const chartLabels = [];
+    const chartData = [];
+    for (let i = 7; i >= 0; i--) {
+       const idx = (currentMonth - i + 12) % 12;
+       chartLabels.push(months[idx]);
+       chartData.push(revenueByMonth[idx]);
+    }
+
+    this.lineChartData = {
+      labels: chartLabels,
+      datasets: [{
+        ...this.lineChartData.datasets[0],
+        data: chartData
+      }]
+    };
+
+    // 6. Trips per Day Chart (Bar)
+    const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const tripsByDay = new Array(7).fill(0);
+    // Use only last 7 days of trips for this chart? or all history aggregated by weekday?
+    // Aggregating by weekday for "standard performance"
+    trips.forEach(t => {
+       const d = new Date(t.date + 'T00:00:00');
+       tripsByDay[d.getDay()]++;
+    });
+    // Shift to start from Seg
+    const reorderedDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    const reorderedData = [tripsByDay[1], tripsByDay[2], tripsByDay[3], tripsByDay[4], tripsByDay[5], tripsByDay[6], tripsByDay[0]];
+
+    this.barChartData = {
+      labels: reorderedDays,
+      datasets: [{
+        ...this.barChartData.datasets[0],
+        data: reorderedData
+      }]
+    };
+
+    // 7. Recent Trips
+    this.recentTrips = trips.slice(0, 5).map(t => {
+       const d = new Date(t.date + 'T00:00:00');
+       const isToday = t.date === todayStr;
+       const label = isToday ? `Hoje, ${t.time}` : `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}, ${t.time}`;
+       return {
+          route: `${t.departureCity} → ${t.arrivalCity}`,
+          date: label,
+          earnings: t.totalAmount || 0,
+          passengers: t.passengerCount || 0
+       };
+    });
+
+    // 8. Earnings by Type
+    this.earningsByType[0].value = monthTotal;
+    this.earningsByType[0].percent = 100;
   }
 
   goBack(): void {
@@ -433,7 +621,7 @@ export class Faturamento implements OnInit {
 
   setPeriod(period: 'week' | 'month' | 'year'): void {
     this.selectedPeriod = period;
-    // TODO: Reload data based on period
+    // Calculation currently uses all history, but we could filter here
   }
 
   formatCurrency(value: number): string {
