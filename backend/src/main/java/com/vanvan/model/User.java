@@ -5,7 +5,6 @@ import com.vanvan.enums.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.hibernate.annotations.SQLRestriction;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
