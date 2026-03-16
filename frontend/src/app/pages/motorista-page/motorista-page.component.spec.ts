@@ -1,30 +1,78 @@
 import { TestBed } from '@angular/core/testing';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { of } from 'rxjs';
+import { signal } from '@angular/core';
 import { MotoristaPage } from './motorista-page';
 import { ToastService } from '../../components/toast/toast.service';
+import { TripService } from '../../services/trip.service';
+import { AuthService } from '../../services/auth.service';
+import { RatingService } from '../../services/rating.service';
 
 function makeToastMock() {
   return { success: vi.fn(), error: vi.fn() };
 }
 
+function makeTripServiceMock() {
+  return {
+    getTripHistory: vi.fn().mockReturnValue(of({ content: [], totalElements: 0 })),
+    getTripDetails: vi.fn().mockReturnValue(of({})),
+    updateTripStatus: vi.fn().mockReturnValue(of({}))
+  };
+}
+
+function makeAuthServiceMock() {
+  return {
+    currentUser: signal({ id: 'driver-1', name: 'Test Driver' }),
+    getDriverMe: vi.fn().mockReturnValue(of({ id: 'driver-1', ratePerKm: 1.5 }))
+  };
+}
+
+function makeRatingServiceMock() {
+  return {
+    getDriverMediaAvaliacao: vi.fn().mockReturnValue(of({ averageScore: 4.8, totalRatings: 10 }))
+  };
+}
+
 describe('MotoristaPage', () => {
   let component: MotoristaPage;
   let toastMock: ReturnType<typeof makeToastMock>;
+  let tripServiceMock: ReturnType<typeof makeTripServiceMock>;
+  let authServiceMock: ReturnType<typeof makeAuthServiceMock>;
+  let ratingServiceMock: ReturnType<typeof makeRatingServiceMock>;
   let routerMock: { navigate: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     toastMock = makeToastMock();
+    tripServiceMock = makeTripServiceMock();
+    authServiceMock = makeAuthServiceMock();
+    ratingServiceMock = makeRatingServiceMock();
     routerMock = { navigate: vi.fn() };
+
     TestBed.configureTestingModule({
       imports: [CommonModule, MotoristaPage],
       providers: [
         { provide: Router, useValue: routerMock },
-        { provide: ToastService, useValue: toastMock }
+        { provide: ToastService, useValue: toastMock },
+        { provide: TripService, useValue: tripServiceMock },
+        { provide: AuthService, useValue: authServiceMock },
+        { provide: RatingService, useValue: ratingServiceMock }
       ]
     });
     component = TestBed.createComponent(MotoristaPage).componentInstance;
+    
+    // Inicializar o currentTrip para evitar erros de null pointer nos testes básicos
+    component.currentTrip = {
+      id: 1,
+      availableSeats: 10,
+      confirmedPassengers: 0,
+      pricePerSeat: 40,
+      distance: '100km',
+      distanceNum: 100,
+      passengers: []
+    };
   });
 
   afterEach(() => {
@@ -178,7 +226,6 @@ describe('MotoristaPage', () => {
   describe('ngOnDestroy', () => {
     it('should clear timer interval if running', () => {
       component.startTrip(); // inicia o interval
-      // usa globalThis em vez de global (compatível com Vitest/jsdom)
       const clearSpy = vi.spyOn(globalThis, 'clearInterval');
       component.ngOnDestroy();
       expect(clearSpy).toHaveBeenCalled();

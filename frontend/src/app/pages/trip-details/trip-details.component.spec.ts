@@ -3,9 +3,17 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { TripDetails } from './trip-details';
+import { TripService } from '../../services/trip.service';
+import { of } from 'rxjs';
 
 function makeRoute(id = 'trip-1') {
   return { snapshot: { paramMap: { get: vi.fn().mockReturnValue(id) } } };
+}
+
+function makeTripServiceMock() {
+  return {
+    getTripDetails: vi.fn().mockReturnValue(of({}))
+  };
 }
 
 describe('TripDetails', () => {
@@ -16,7 +24,8 @@ describe('TripDetails', () => {
       imports: [CommonModule, TripDetails],
       providers: [
         { provide: ActivatedRoute, useValue: makeRoute('trip-42') },
-        { provide: Router, useValue: { navigate: vi.fn() } }
+        { provide: Router, useValue: { navigate: vi.fn() } },
+        { provide: TripService, useValue: makeTripServiceMock() }
       ]
     });
     component = TestBed.createComponent(TripDetails).componentInstance;
@@ -44,7 +53,7 @@ describe('TripDetails', () => {
         date: '10/03/2026', time: '08:00', price: 'R$45,00',
         distance: '230 km', duration: '3h',
         availableSeats: 4, totalSeats: 15,
-        status: 'scheduled',
+        status: 'SCHEDULED',
         driverName: 'Carlos', driverPhone: '87999', driverRating: 4.8,
         vehicleModel: 'Sprinter', vehiclePlate: 'ABC1D23', vehicleImage: '',
         originCoords: { lat: 0, lng: 0 },
@@ -94,9 +103,9 @@ describe('TripDetails', () => {
 
   describe('statusLabel for each status', () => {
     const cases = [
-      { status: 'in-progress', label: 'Em andamento' },
-      { status: 'completed', label: 'Finalizada' },
-      { status: 'cancelled', label: 'Cancelada' },
+      { status: 'IN_PROGRESS', label: 'Em andamento' },
+      { status: 'COMPLETED', label: 'Finalizada' },
+      { status: 'CANCELLED', label: 'Cancelada' },
     ] as const;
 
     cases.forEach(({ status, label }) => {
