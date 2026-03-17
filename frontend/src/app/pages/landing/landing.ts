@@ -17,10 +17,6 @@ export class LandingComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined') {
-      this.mouseX = window.innerWidth / 2;
-      this.mouseY = window.innerHeight / 2;
-    }
   }
 
   @HostListener('document:mousemove', ['$event'])
