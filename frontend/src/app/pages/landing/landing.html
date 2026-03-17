@@ -1,0 +1,204 @@
+<div
+  class="min-h-screen bg-[#C4C4C4] p-4 md:p-8 flex items-center justify-center font-sans tracking-wide overflow-x-hidden w-full max-w-[100vw] box-border">
+
+  <!-- Main Inner Container -->
+  <div
+    class="relative w-full min-h-[calc(100vh-2rem)] md:min-h-[calc(100vh-4rem)] rounded-[40px] shadow-2xl overflow-hidden flex flex-col"
+    style="background: linear-gradient(to right, #E1E2E4, #EFF1F4);">
+
+    <!-- Top Navigation Bar (TP-7 Style Refined) -->
+    <nav class="absolute top-0 left-0 w-full p-4 md:p-6 flex items-center gap-2 z-50">
+
+      <!-- Logo Pill -->
+      <a routerLink="/"
+        class="h-10 md:h-12 px-5 bg-black rounded-[24px] flex items-center justify-center cursor-pointer hover:bg-black/80 hover:rounded-[12px] transition-all duration-300 shadow-sm shrink-0">
+        <div class="w-6 h-6 bg-white"
+          style="-webkit-mask: url(assets/logo/LOGO%20-%20VANVAN%20-%20SVG.svg) no-repeat center / contain; mask: url(assets/logo/LOGO%20-%20VANVAN%20-%20SVG.svg) no-repeat center / contain;">
+        </div>
+      </a>
+
+      <!-- Secondary Tabs - INFO, LOGIN, CADASTRO -->
+      <a routerLink="/" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="!bg-[#101010] !text-white"
+        class="hidden md:flex h-10 md:h-12 px-6 md:px-8 bg-white rounded-[24px] items-center justify-center text-[10px] md:text-[11px] font-medium uppercase tracking-widest text-[#101010] hover:bg-[#F66B0E]/10 hover:text-[#F66B0E] hover:rounded-[12px] transition-all duration-300 shadow-sm cursor-pointer no-underline shrink-0">
+        INFO
+      </a>
+
+      <a routerLink="/login" routerLinkActive="!bg-[#101010] !text-white"
+        class="hidden md:flex h-10 md:h-12 px-6 md:px-8 bg-white rounded-[12px] items-center justify-center text-[10px] md:text-[11px] font-medium uppercase tracking-widest text-[#101010] hover:bg-[#F66B0E]/10 hover:text-[#F66B0E] hover:rounded-[24px] transition-all duration-300 shadow-sm cursor-pointer no-underline shrink-0">
+        LOGIN
+      </a>
+
+      <a routerLink="/register" routerLinkActive="!bg-[#101010] !text-white"
+        class="hidden md:flex h-10 md:h-12 px-6 md:px-8 bg-white rounded-[12px] items-center justify-center text-[10px] md:text-[11px] font-medium uppercase tracking-widest text-[#101010] hover:bg-[#F66B0E]/10 hover:text-[#F66B0E] hover:rounded-[24px] transition-all duration-300 shadow-sm cursor-pointer no-underline shrink-0">
+        CADASTRO
+      </a>
+
+      <!-- Primary Action Pill (Orange) -->
+      <a routerLink="/buscar-viagens"
+        class="h-10 md:h-12 px-6 md:px-10 bg-[#F66B0E] rounded-[24px] flex items-center justify-center text-[10px] md:text-[11px] font-medium uppercase tracking-widest text-white hover:brightness-110 hover:rounded-[12px] transition-all duration-300 shadow-sm cursor-pointer no-underline shrink-0">
+        RESERVAR
+      </a>
+
+      <!-- Dashed Central Banner - FLEX 1 to fill space -->
+      <a routerLink="/buscar-viagens"
+        class="hidden lg:flex flex-1 h-12 px-8 border border-dashed border-[#101010] hover:bg-[#101010]/5 hover:rounded-[12px] transition-all duration-300 rounded-[24px] items-center justify-center no-underline cursor-pointer">
+        <span class="text-[10px] font-medium uppercase tracking-[0.2em] text-[#101010] whitespace-nowrap">
+          DESCUBRA TODAS AS NOSSAS ROTAS
+        </span>
+      </a>
+
+      <!-- Subscribe Style Pill -->
+      <a routerLink="/register"
+        class="hidden md:flex h-10 md:h-12 px-6 md:px-10 bg-gradient-to-r from-[#1E1E1E] to-[#101010] rounded-[24px] items-center justify-center text-[10px] md:text-[11px] font-medium uppercase tracking-widest text-white hover:brightness-110 hover:rounded-[12px] transition-all duration-300 shadow-sm cursor-pointer no-underline shrink-0">
+        SER MOTORISTA
+      </a>
+
+      <!-- "#" Pill equivalent -->
+      <a routerLink="/"
+        class="h-10 w-10 md:h-12 md:w-16 bg-white rounded-[12px] flex items-center justify-center text-[16px] font-bold text-[#101010] hover:bg-[#F66B0E]/10 hover:text-[#F66B0E] hover:rounded-[24px] transition-all duration-300 shadow-sm cursor-pointer no-underline shrink-0">
+        #
+      </a>
+    </nav>
+
+
+    <!-- Giant Background Typography (Now Behind Everything Z-0, Lowered to avoid Navbar overlap) -->
+    <div
+      class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden whitespace-nowrap pt-16">
+
+      <!-- Horizontal repeating "VAN" layout with gap 2 -->
+      <div class="flex items-center gap-2 -translate-y-8 w-full justify-center"
+        style="font-size: min(45vw, 750px); line-height: 0.85;">
+
+        <!-- Left adjacent "VAN" -->
+        <div class="font-black tracking-tighter text-[#101010] opacity-90">
+          VAN
+        </div>
+
+        <!-- Center "VAN" -->
+        <div class="font-black tracking-tighter text-transparent opacity-95 shrink-0"
+          style="-webkit-text-stroke: 6px #F66B0E;">
+          VAN
+        </div>
+
+        <!-- Right adjacent "VAN" -->
+        <div class="font-black tracking-tighter text-[#101010] opacity-90">
+          VAN
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- The Product Centerpiece (Positioned ABOVE Typography Z-10, slightly higher) -->
+    <div
+      class="absolute inset-0 flex items-center justify-center w-full min-h-full pointer-events-none overflow-visible z-10 pt-16">
+      <img src="assets/VAN-GLASS_1_CLEAR.png" alt="VanVan"
+        class="w-full max-w-[1300px] object-contain pointer-events-none scale-[1.1] translate-y-4 md:scale-[1.0] md:-translate-y-2 drop-shadow-[0_40px_60px_rgba(0,0,0,0.4)]" />
+    </div>
+
+    <!-- Glow effect for depth (Positioned Right, behind text) -->
+    <div
+      class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none z-20 overflow-hidden w-1/2 h-full flex items-center justify-end">
+      <div
+        class="w-[90%] h-[90%] bg-gradient-to-tr from-[#FF9A56]/40 to-[#F66B0E]/10 rounded-full blur-[120px] translate-x-1/4">
+      </div>
+    </div>
+
+    <!-- Fluid Glass Lens Effect (Z-25: Blurs Z-0 to Z-20; Does not blur text at Z-30/Z-50) -->
+    <div
+      class="pointer-events-none fixed z-[25] rounded-full flex items-center justify-center transition-all duration-300 ease-out will-change-[left,top]"
+      [style.left.px]="mouseX"
+      [style.top.px]="mouseY"
+      [style.width.px]="200"
+      [style.height.px]="200"
+      style="transform: translate(-50%, -50%); backdrop-filter: blur(16px) contrast(1.1) saturate(1.2) brightness(1.05); box-shadow: inset 0 0 20px rgba(255,255,255,0.4), inset 0 0 50px rgba(255,255,255,0.1), 0 20px 40px rgba(0,0,0,0.15);">
+      
+      <!-- Rotating Dashed Border -->
+      <div class="absolute inset-0 rounded-full animate-[spin_10s_linear_infinite]"
+           style="border: 2px dashed rgba(16, 16, 16, 0.4);">
+      </div>
+
+      <!-- Inner subtle highlight for glass volume -->
+      <div class="absolute inset-[8px] rounded-full border border-white/50 mix-blend-overlay"></div>
+    </div>
+
+    <!-- Descriptive Text Blocks (Matching Reference Layout) -->
+
+    <!-- Top Right: Connectivity / Service Options -->
+    <div class="absolute top-[28vh] right-8 md:right-16 max-w-[280px] z-30 pointer-events-none text-right">
+      <p class="text-[#101010]/90 font-mono text-[9px] uppercase tracking-widest leading-relaxed m-0 opacity-90">
+        MÚLTIPLAS OPÇÕES DE VIAGENS INCLUEM EXECUTIVO, REGULAR E INTERMUNICIPAL. RESERVA INSTANTÂNEA DISPONÍVEL VIA APP
+        E WEB. INCLUÍDO NA VIAGEM: AR-CONDICIONADO DIGITAL, WI-FI E ASSENTOS ERGONÔMICOS.
+      </p>
+    </div>
+
+    <!-- Corner Texts & Mini Specs (TP-7 Style Grid with Blur Shapes) -->
+    <div
+      class="absolute bottom-2 left-6 right-6 md:bottom-4 md:left-8 md:right-8 flex flex-col gap-2 md:gap-3 pointer-events-none z-30 text-[#101010]">
+
+      <!-- Top row of the bottom text block -->
+      <div class="flex justify-between items-end w-full">
+        <!-- Main Labels (Left) -->
+        <div class="flex gap-4 md:gap-12 glass-inner rounded-full px-5 py-2.5">
+          <span
+            class="text-[#101010] font-mono text-[9px] md:text-[10px] tracking-widest uppercase font-bold">VIAGENS</span>
+          <span
+            class="text-[#101010] font-mono text-[9px] md:text-[10px] tracking-widest uppercase font-bold">COMPARTILHADAS</span>
+        </div>
+
+        <!-- Designer / Creator specs (Center Left) -->
+        <div class="hidden md:flex flex-col items-center glass-inner rounded-full px-5 py-2.5">
+          <span
+            class="text-[#101010] font-mono text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-bold text-center">
+            CONECTANDO PESSOAS
+          </span>
+        </div>
+
+        <!-- Title (Center Right) -->
+        <div class="hidden lg:flex flex-col items-center glass-inner rounded-full px-5 py-2.5">
+          <span class="text-[#101010] font-mono text-[9px] md:text-[10px] tracking-widest uppercase font-bold">
+            O MELHOR DA CATEGORIA
+          </span>
+        </div>
+
+        <!-- Tech specs titles (Right) -->
+        <div class="hidden md:flex gap-4 md:gap-12 glass-inner rounded-full px-5 py-2.5">
+          <span
+            class="text-[#101010] font-mono text-[9px] md:text-[10px] tracking-widest uppercase font-bold">CONFORTO</span>
+          <span
+            class="text-[#101010] font-mono text-[9px] md:text-[10px] tracking-widest uppercase font-bold text-right">TECNOLOGIA</span>
+        </div>
+      </div>
+
+      <!-- Bottom row of the text block -->
+      <div class="flex flex-col md:flex-row justify-between items-end w-full gap-4 border-t border-[#101010]/15 pt-3">
+
+        <!-- Long generic text block (Bottom Left) -->
+        <div class="max-w-[340px]">
+          <p
+            class="text-[#101010] font-mono text-[9px] md:text-[10px] uppercase tracking-widest leading-relaxed text-left m-0">
+            A PLATAFORMA VANVAN É A SOLUÇÃO DEFINITIVA PARA VIAGENS COLETIVAS. NOSSO SISTEMA INTEGRA MOTORISTAS
+            VERIFICADOS COM UMA FROTA DE ALTO PADRÃO, GARANTINDO QUE CADA ROTA SEJA UMA EXPERIÊNCIA DE CONFORTO E
+            SEGURANÇA SEM PRECEDENTES NO MERCADO NACIONAL.
+          </p>
+        </div>
+
+        <!-- Lists of specs (Bottom Right) -->
+        <div class="flex flex-col text-right">
+          <ul
+            class="list-none m-0 p-0 flex flex-col gap-0.5 text-[#101010] font-mono text-[9px] md:text-[10px] uppercase tracking-widest">
+            <li>• 15 ASSENTOS RECLINÁVEIS</li>
+            <li>• AR-CONDICIONADO DIGITAL</li>
+            <li>• WI-FI DE ALTA VELOCIDADE</li>
+            <li>• MOTORISTAS PROFISSIONAIS</li>
+            <li>• RASTREAMENTO EM TEMPO REAL</li>
+            <li>• SEGURO VIAGEM INCLUÍDO</li>
+            <li>• SUPORTE 24 HORAS</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

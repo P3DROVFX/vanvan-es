@@ -10,20 +10,9 @@ import { AdminService } from '../../services/admin.service';
 import { ClienteService } from '../../services/client.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { TripMapper } from '../../utils/trip-mapper';
+import { RecentTrip } from '../../models/trip-ui.model';
 
-export interface RecentTrip {
-  date: string;
-  origin: string;
-  destination: string;
-  driver: string;
-  status: string;
-  variant: TagVariant;
-  vehicle: string;
-  price: string;
-  passengers: number;
-  capacity: number;
-  licensePlate: string;
-}
 
 export interface PopularRoute {
   origin: string;
@@ -397,42 +386,6 @@ closeRecentTripsModal() {
   }
 
   private mapToRecentTrip(dto: TripHistoryDTO): RecentTrip {
-    const [year, month, day] = dto.date ? dto.date.split("-") : ['2025', '01', '01'];
-    
-    let variant: TagVariant = 'warning';
-    let statusLabel = 'Aguardando';
-
-    switch (dto.status) {
-      case 'SCHEDULED':
-        variant = 'warning';
-        statusLabel = 'Confirmado';
-        break;
-      case 'IN_PROGRESS':
-        variant = 'info';
-        statusLabel = 'Em andamento';
-        break;
-      case 'COMPLETED':
-        variant = 'success';
-        statusLabel = 'Finalizado';
-        break;
-      case 'CANCELLED':
-        variant = 'error';
-        statusLabel = 'Cancelado';
-        break;
-    }
-
-    return {
-      date: `${day}/${month}`,
-      origin: dto.departureCity || '---',
-      destination: dto.arrivalCity || '---',
-      driver: dto.driverName || '---',
-      status: statusLabel,
-      variant: variant,
-      vehicle: 'Van',
-      price: `R$ ${(dto.totalAmount || 0).toFixed(2).replace('.', ',')}`,
-      passengers: dto.passengerCount || 0,
-      capacity: dto.totalSeats || 15,
-      licensePlate: '---'
-    };
+    return TripMapper.toRecentTrip(dto);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, map, catchError, shareReplay, tap } from 'rxjs';
+import { Observable, of, map, catchError, shareReplay } from 'rxjs';
 
 export interface IBGEMunicipio {
   id: number;
@@ -41,7 +41,6 @@ export class CityService {
 
     if (!this.cities$) {
       this.cities$ = this.http.get<IBGEMunicipio[]>(this.API_URL).pipe(
-        tap(data => console.log(`[CityService] Loaded ${data.length} cities from IBGE API`)),
         map(municipios =>
           municipios
             .filter(m => m.microrregiao?.mesorregiao?.UF?.sigla)

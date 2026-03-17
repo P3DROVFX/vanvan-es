@@ -35,6 +35,15 @@ public class Driver extends User {
     @Column(name = "rate_per_km")
     private Double ratePerKm = 0.70; // Preço padrão R$ 0,70 por KM
 
+    @Column(name = "ac_enabled")
+    private Boolean airConditioningEnabled = false;
+
+    @Column(name = "accepts_pets")
+    private Boolean acceptsPets = false;
+
+    @Column(name = "large_luggage")
+    private Boolean largeLuggageEnabled = false;
+
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehicle> vehicles = new ArrayList<>();
 

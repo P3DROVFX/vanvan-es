@@ -145,4 +145,17 @@ public class UserService {
         return driver.getRatePerKm();
     }
 
+    @Transactional
+    public void updateDriverPreferences(User user, Boolean acEnabled, Boolean acceptsPets, Boolean largeLuggage) {
+        if (!(user instanceof Driver driver)) {
+            throw new IllegalArgumentException("Apenas motoristas podem configurar preferências de viagem.");
+        }
+        
+        if (acEnabled != null) driver.setAirConditioningEnabled(acEnabled);
+        if (acceptsPets != null) driver.setAcceptsPets(acceptsPets);
+        if (largeLuggage != null) driver.setLargeLuggageEnabled(largeLuggage);
+        
+        driverRepository.save(driver);
+    }
+
 }

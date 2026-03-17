@@ -8,7 +8,7 @@ import { Toggle } from '../../components/toggle/toggle';
 import { VehicleService } from '../../services/vehicle.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../components/toast/toast.service';
-import { PastTrip } from '../../models/trip.model';
+import { PastTrip } from '../../models/trip-ui.model';
 import { TripService } from '../../services/trip.service';
 import { CityService, City } from '../../services/city.service';
 
@@ -172,7 +172,7 @@ export class OfertarViagem implements OnInit, OnDestroy {
         if (page.content && page.content.length > 0) {
           this.pastTrips = page.content.map((trip: any) => {
             const dt = new Date(trip.date);
-            const day = String(dt.getDate() + 1).padStart(2, '0');
+            const day = String(dt.getDate()).padStart(2, '0');
             const monthStr = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'][dt.getMonth()];
             
             return {

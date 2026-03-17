@@ -44,6 +44,9 @@ public class UserController {
             response.put("registrationStatus", driver.getRegistrationStatus().name());
             response.put("rejectionReason", driver.getRejectionReason());
             response.put("ratePerKm", driver.getRatePerKm());
+            response.put("airConditioningEnabled", driver.getAirConditioningEnabled());
+            response.put("acceptsPets", driver.getAcceptsPets());
+            response.put("largeLuggageEnabled", driver.getLargeLuggageEnabled());
         }
 
         return ResponseEntity.ok(response);
@@ -63,6 +66,30 @@ public class UserController {
             Map<String, Object> response = new HashMap<>();
             response.put("ratePerKm", updatedRate);
             response.put("message", "Tarifa atualizada com sucesso.");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/preferences")
+    public ResponseEntity<Object> updatePreferences(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Map<String, Boolean> payload) {
+        User user = userRepository.findByEmail(userDetails.getUsername());
+        if (user == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            Boolean acEnabled = payload.get("airConditioningEnabled");
+            Boolean acceptsPets = payload.get("acceptsPets");
+            Boolean largeLuggage = payload.get("largeLuggageEnabled");
+            
+            userService.updateDriverPreferences(user, acEnabled, acceptsPets, largeLuggage);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Preferências atualizadas com sucesso.");
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

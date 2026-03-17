@@ -107,6 +107,30 @@
       </div>
     </div>
 
+    <!-- Viagens -->
+    <div class="content-stretch flex flex-col items-start relative shrink-0 w-full"
+      (click)="setActivePage('trips')">
+      <div
+        [class]="'content-stretch flex gap-[10px] h-[62px] items-center px-[18px] py-[14px] relative rounded-[10px] shrink-0 w-full cursor-pointer transition-colors ' + (activePage() === 'trips' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
+        <div class="relative shrink-0 size-[34px]">
+          <div class="absolute contents inset-0">
+            <div [class]="'size-full ' + (activePage() === 'trips' ? 'bg-dark' : 'bg-subtle-text')"
+              [style.mask-image]="'url(assets/icons/routing.svg)'" [style.webkit-mask-image]="'url(assets/icons/routing.svg)'"
+              style="mask-repeat: no-repeat; mask-position: center; mask-size: contain;"></div>
+          </div>
+        </div>
+        <div
+          [class]="'content-stretch flex flex-col font-medium items-start justify-center not-italic relative shrink-0 ' + (activePage() === 'trips' ? 'text-dark' : 'text-subtle-text')">
+          <div class="flex flex-col justify-center leading-[0] relative shrink-0 text-medium w-full">
+            <p class="leading-[1.2] whitespace-pre-wrap m-0">Viagens</p>
+          </div>
+          <p class="leading-[normal] relative shrink-0 text-small w-full whitespace-pre-wrap m-0">
+            Gerencie viagens do sistema
+          </p>
+        </div>
+      </div>
+    </div>
+
     <!-- Aprovar Motoristas -->
     <div class="content-stretch flex flex-col items-start relative shrink-0 w-full"
       (click)="setActivePage('verification')">
@@ -158,20 +182,20 @@
 
   <!-- Footer / Logout -->
   <div class="content-stretch flex flex-col items-start relative shrink-0 w-full mt-auto"
-    (click)="setActivePage('logout')">
+    (click)="setActivePage('profile')">
     <div
-      [class]="'content-stretch flex gap-[10px] h-[62px] items-center px-[18px] py-[14px] relative rounded-[60px] shrink-0 w-full cursor-pointer transition-colors ' + (activePage() === 'logout' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
+      [class]="'content-stretch flex gap-[10px] h-[62px] items-center px-[18px] py-[14px] relative rounded-[60px] shrink-0 w-full cursor-pointer transition-colors ' + (activePage() === 'profile' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
       <div class="relative shrink-0 size-[34px]">
         <div class="absolute contents inset-0">
-          <div [class]="'size-full ' + (activePage() === 'logout' ? 'bg-dark' : 'bg-subtle-text')"
-            [style.mask-image]="'url(' + Logout + ')'" [style.webkit-mask-image]="'url(' + Logout + ')'"
+          <div [class]="'size-full ' + (activePage() === 'profile' ? 'bg-dark' : 'bg-subtle-text')"
+            [style.mask-image]="'url(' + User + ')'" [style.webkit-mask-image]="'url(' + User + ')'"
             style="mask-repeat: no-repeat; mask-position: center; mask-size: contain;"></div>
         </div>
       </div>
       <div
-        [class]="'content-stretch flex flex-col font-medium items-start justify-center not-italic relative shrink-0 ' + (activePage() === 'logout' ? 'text-dark' : 'text-subtle-text')">
+        [class]="'content-stretch flex flex-col font-medium items-start justify-center not-italic relative shrink-0 ' + (activePage() === 'profile' ? 'text-dark' : 'text-subtle-text')">
         <div class="flex flex-col justify-center leading-[0] relative shrink-0 text-medium w-full">
-          <p class="leading-[1.2] whitespace-pre-wrap m-0">Sair</p>
+          <p class="leading-[1.2] whitespace-pre-wrap m-0">Perfil</p>
         </div>
       </div>
     </div>
@@ -189,7 +213,7 @@
 
   <div class="content-stretch flex flex-col gap-[14px] items-center relative shrink-0 w-full animate-slide-in flex-1">
     <!-- Relatórios -->
-    <div (click)="setActivePage('reports')"
+    <div (click)="setActivePage('reports')" title="Relatórios"
       [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-[10px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'reports' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
       <div class="relative shrink-0 size-[34px]">
         <div [class]="'size-full ' + (activePage() === 'reports' ? 'bg-dark' : 'bg-subtle-text')"
@@ -204,7 +228,7 @@
       </p>
 
       <!-- Motoristas -->
-      <div (click)="setActivePage('drivers')"
+      <div (click)="setActivePage('drivers')" title="Motoristas"
         [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-t-[10px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'drivers' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
         <div class="relative shrink-0 size-[34px]">
           <div [class]="'size-full ' + (activePage() === 'drivers' ? 'bg-dark' : 'bg-subtle-text')"
@@ -213,7 +237,7 @@
         </div>
       </div>
       <!-- Clientes -->
-      <div (click)="setActivePage('clients')"
+      <div (click)="setActivePage('clients')" title="Clientes"
         [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-[4px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'clients' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
         <div class="relative shrink-0 size-[34px]">
           <div [class]="'size-full ' + (activePage() === 'clients' ? 'bg-dark' : 'bg-subtle-text')"
@@ -222,7 +246,7 @@
         </div>
       </div>
       <!-- Avaliações -->
-      <div (click)="setActivePage('ratings')"
+      <div (click)="setActivePage('ratings')" title="Avaliações"
         [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-b-[10px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'ratings' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
         <div class="relative shrink-0 size-[34px]">
           <div [class]="'size-full ' + (activePage() === 'ratings' ? 'bg-dark' : 'bg-subtle-text')"
@@ -232,8 +256,18 @@
       </div>
     </div>
 
+    <!-- Viagens -->
+    <div (click)="setActivePage('trips')" title="Viagens"
+      [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-[10px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'trips' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
+      <div class="relative shrink-0 size-[34px]">
+        <div [class]="'size-full ' + (activePage() === 'trips' ? 'bg-dark' : 'bg-subtle-text')"
+          [style.mask-image]="'url(assets/icons/routing.svg)'" [style.webkit-mask-image]="'url(assets/icons/routing.svg)'"
+          style="mask-repeat: no-repeat; mask-position: center; mask-size: contain;"></div>
+      </div>
+    </div>
+
     <!-- Aprovar -->
-    <div (click)="setActivePage('verification')"
+    <div (click)="setActivePage('verification')" title="Aprovar Motoristas"
       [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-[10px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'verification' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
       <div class="relative shrink-0 size-[34px]">
         <div [class]="'size-full ' + (activePage() === 'verification' ? 'bg-dark' : 'bg-subtle-text')"
@@ -243,7 +277,7 @@
     </div>
 
     <!-- Administração -->
-    <div (click)="setActivePage('admin')"
+    <div (click)="setActivePage('admin')" title="Ajustes"
       [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-[10px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'admin' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
       <div class="relative shrink-0 size-[34px]">
         <div [class]="'size-full ' + (activePage() === 'admin' ? 'bg-dark' : 'bg-subtle-text')"
@@ -255,11 +289,11 @@
 
   <!-- Footer / Logout Contracted -->
   <div class="content-stretch flex flex-col items-center relative shrink-0 w-full mt-auto">
-    <div (click)="setActivePage('logout')"
-      [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-[60px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'logout' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
+    <div (click)="setActivePage('profile')" title="Perfil"
+      [class]="'content-stretch flex h-[62px] w-[62px] items-center justify-center relative rounded-[60px] shrink-0 cursor-pointer transition-colors ' + (activePage() === 'profile' ? 'bg-accent' : 'bg-white hover:bg-white/50')">
       <div class="relative shrink-0 size-[34px]">
-        <div [class]="'size-full ' + (activePage() === 'logout' ? 'bg-dark' : 'bg-subtle-text')"
-          [style.mask-image]="'url(' + Logout + ')'" [style.webkit-mask-image]="'url(' + Logout + ')'"
+        <div [class]="'size-full ' + (activePage() === 'profile' ? 'bg-dark' : 'bg-subtle-text')"
+          [style.mask-image]="'url(' + User + ')'" [style.webkit-mask-image]="'url(' + User + ')'"
           style="mask-repeat: no-repeat; mask-position: center; mask-size: contain;"></div>
       </div>
     </div>

@@ -23,9 +23,6 @@ export interface DriverAdmin {
   providedIn: 'root',
 })
 export class AdminService {
-  listClients(undefined: undefined, arg1: number, arg2: number) {
-    throw new Error('Method not implemented.');
-  }
   private readonly API_URL = `${environment.apiUrl}/api/admin`;
 
   constructor(private http: HttpClient) {}

@@ -97,7 +97,7 @@
             <span class="text-body text-text leading-[1.2]">Ar-Condicionado</span>
             <span class="text-small text-subtle-text">{{ airConditioningEnabled ? 'Ativado' : 'Desativado' }}</span>
           </div>
-          <app-toggle [(checked)]="airConditioningEnabled"></app-toggle>
+          <app-toggle [(checked)]="airConditioningEnabled" (checkedChange)="savePreferences()"></app-toggle>
         </div>
 
         <!-- Divider -->
@@ -112,7 +112,7 @@
             <span class="text-body text-text leading-[1.2]">Aceita pets</span>
             <span class="text-small text-subtle-text">{{ acceptsPets ? 'Ativado' : 'Desativado' }}</span>
           </div>
-          <app-toggle [(checked)]="acceptsPets"></app-toggle>
+          <app-toggle [(checked)]="acceptsPets" (checkedChange)="savePreferences()"></app-toggle>
         </div>
 
         <!-- Divider -->
@@ -127,7 +127,7 @@
             <span class="text-body text-text leading-[1.2]">Mala grande</span>
             <span class="text-small text-subtle-text">{{ largeLuggageEnabled ? 'Ativado' : 'Desativado' }}</span>
           </div>
-          <app-toggle [(checked)]="largeLuggageEnabled"></app-toggle>
+          <app-toggle [(checked)]="largeLuggageEnabled" (checkedChange)="savePreferences()"></app-toggle>
         </div>
 
       </div>

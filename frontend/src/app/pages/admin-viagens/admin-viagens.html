@@ -1,0 +1,160 @@
+<div class="flex flex-col gap-6 p-8 w-full min-h-full">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-dark m-0">Gestão de Viagens</h1>
+      <p class="text-subtle-text text-sm m-0 mt-1">Gerencie todas as viagens do sistema</p>
+    </div>
+    <div class="flex gap-3">
+      <button
+        (click)="exportCSV()"
+        [disabled]="isExporting"
+        class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-dark hover:bg-gray-50 transition-colors disabled:opacity-50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        {{ isExporting ? 'Exportando...' : 'Exportar CSV' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-light rounded-2xl p-5 flex flex-wrap gap-4 items-end">
+    <div class="flex flex-col gap-1 min-w-[160px]">
+      <label class="text-xs font-medium text-subtle-text">Status</label>
+      <select [(ngModel)]="filterStatus" class="px-3 py-2 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent">
+        <option value="">Todos</option>
+        <option value="SCHEDULED">Agendado</option>
+        <option value="IN_PROGRESS">Em Andamento</option>
+        <option value="COMPLETED">Finalizado</option>
+        <option value="CANCELLED">Cancelado</option>
+      </select>
+    </div>
+
+    <div class="flex flex-col gap-1 min-w-[160px]">
+      <label class="text-xs font-medium text-subtle-text">Motorista</label>
+      <select [(ngModel)]="filterDriver" class="px-3 py-2 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent">
+        <option value="">Todos</option>
+        @for (driver of drivers; track driver.id) {
+          <option [value]="driver.id">{{ driver.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="flex flex-col gap-1 min-w-[140px]">
+      <label class="text-xs font-medium text-subtle-text">Origem</label>
+      <input type="text" [(ngModel)]="filterDepartureCity" placeholder="Cidade" class="px-3 py-2 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent" />
+    </div>
+
+    <div class="flex flex-col gap-1 min-w-[140px]">
+      <label class="text-xs font-medium text-subtle-text">Destino</label>
+      <input type="text" [(ngModel)]="filterArrivalCity" placeholder="Cidade" class="px-3 py-2 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent" />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-medium text-subtle-text">Data início</label>
+      <input type="date" [(ngModel)]="filterStartDate" class="px-3 py-2 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent" />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-medium text-subtle-text">Data fim</label>
+      <input type="date" [(ngModel)]="filterEndDate" class="px-3 py-2 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent" />
+    </div>
+
+    <div class="flex gap-2">
+      <button (click)="applyFilters()" class="px-4 py-2 bg-dark text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity">
+        Filtrar
+      </button>
+      <button (click)="clearFilters()" class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-subtle-text hover:bg-gray-50 transition-colors">
+        Limpar
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  @if (isLoading) {
+    <div class="flex flex-col gap-3">
+      @for (i of [1,2,3,4,5]; track i) {
+        <app-skeleton height="48px" borderRadius="12px"></app-skeleton>
+      }
+    </div>
+  } @else if (sortedTrips.length === 0) {
+    <div class="flex flex-col items-center justify-center py-16 gap-4">
+      <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      <p class="text-subtle-text text-base font-medium m-0">Nenhuma viagem encontrada</p>
+      <p class="text-gray-400 text-sm m-0">Tente ajustar os filtros</p>
+    </div>
+  } @else {
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-light border-b border-gray-100">
+            <th class="px-4 py-3 text-left font-semibold text-dark cursor-pointer hover:text-accent transition-colors" (click)="toggleSort('date')">
+              Data {{ sortColumn === 'date' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+            </th>
+            <th class="px-4 py-3 text-left font-semibold text-dark">Origem</th>
+            <th class="px-4 py-3 text-left font-semibold text-dark">Destino</th>
+            <th class="px-4 py-3 text-left font-semibold text-dark cursor-pointer hover:text-accent transition-colors" (click)="toggleSort('driver')">
+              Motorista {{ sortColumn === 'driver' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+            </th>
+            <th class="px-4 py-3 text-center font-semibold text-dark">Pass.</th>
+            <th class="px-4 py-3 text-right font-semibold text-dark">Valor</th>
+            <th class="px-4 py-3 text-center font-semibold text-dark cursor-pointer hover:text-accent transition-colors" (click)="toggleSort('status')">
+              Status {{ sortColumn === 'status' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+            </th>
+            <th class="px-4 py-3 text-center font-semibold text-dark">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (trip of sortedTrips; track $index; let i = $index) {
+            <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+              <td class="px-4 py-3 text-dark">{{ trip.date }}</td>
+              <td class="px-4 py-3 text-dark">{{ trip.origin }}</td>
+              <td class="px-4 py-3 text-dark">{{ trip.destination }}</td>
+              <td class="px-4 py-3 text-dark">{{ trip.driver }}</td>
+              <td class="px-4 py-3 text-center text-dark">{{ trip.passengers }}/{{ trip.capacity }}</td>
+              <td class="px-4 py-3 text-right text-dark font-medium">{{ trip.price }}</td>
+              <td class="px-4 py-3 text-center">
+                <app-tag [variant]="trip.variant">{{ trip.status }}</app-tag>
+              </td>
+              <td class="px-4 py-3 text-center">
+                @if (allTrips[i]?.status === 'SCHEDULED' || allTrips[i]?.status === 'IN_PROGRESS') {
+                  <button (click)="cancelTrip(i)" class="px-3 py-1 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium">
+                    Cancelar
+                  </button>
+                } @else {
+                  <span class="text-gray-300 text-xs">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+      <div class="flex items-center justify-between">
+        <p class="text-sm text-subtle-text m-0">
+          {{ totalElements }} viagens encontradas • Página {{ currentPage + 1 }} de {{ totalPages }}
+        </p>
+        <div class="flex gap-1">
+          <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0"
+            class="px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-40 transition-all">
+            ←
+          </button>
+          @for (p of pageNumbers; track p) {
+            @if (p === currentPage || p === 0 || p === totalPages - 1 || (p >= currentPage - 1 && p <= currentPage + 1)) {
+              <button (click)="goToPage(p)"
+                [class]="'px-3 py-1.5 rounded-lg text-sm font-medium transition-all ' + (p === currentPage ? 'bg-dark text-white' : 'bg-white border border-gray-200 hover:bg-gray-50')">
+                {{ p + 1 }}
+              </button>
+            }
+          }
+          <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1"
+            class="px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-40 transition-all">
+            →
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -6,16 +6,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "primary": "#F66B0E",
-        "secondary": "#557D96",
-        "tetiary": "#E1C69A",
-        "dark": "#353535",
-        "text": "#112B3C",
-        "subtle-text": "#646464",
-        "accent": "#B1B1B1",
-        "light": "#EEEEEF",
-        "success": "#31D0AA",
-        "white": '#FAFAFA'
+        "primary": "var(--color-primary)",
+        "secondary": "var(--color-secondary)",
+        "tetiary": "var(--color-tetiary)",
+        "dark": "var(--color-dark)",
+        "text": "var(--color-text)",
+        "subtle-text": "var(--color-subtle-text)",
+        "accent": "var(--color-accent)",
+        "light": "var(--color-light)",
+        "success": "var(--color-success)",
+        "white": "var(--color-white)"
       },
       fontFamily: {
         "google-sans-flex": "Google Sans Flex",

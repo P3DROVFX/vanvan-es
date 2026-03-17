@@ -52,9 +52,9 @@
         </div>
       }
 
-      <div class="flex flex-col w-full overflow-y-auto flex-1">
+      <div class="flex flex-col w-full overflow-y-auto flex-1 stagger-children">
         @for (motorista of motoristasFiltrados(); track motorista.id) {
-          <div class="flex items-center px-6 py-[14px] w-full transition-colors hover:bg-black/[0.02]">
+          <div class="flex items-center px-6 py-[14px] w-full transition-all hover:bg-black/[0.02] animate-fade-in-up opacity-0">
             <div class="flex gap-3 items-center flex-1">
               <div class="bg-white flex items-center p-3 rounded-full shrink-0">
                 <img src="assets/icons/user.svg" alt="Motorista" class="w-7 h-7" />
@@ -83,13 +83,17 @@
             <div class="flex-1 flex justify-center gap-8">
               <button
                 (click)="abrirModalEditar(motorista)"
+                title="Editar motorista"
+                class="cursor-pointer hover:opacity-60 transition-opacity btn-press"
               >
-                <img src="assets/icons/edit.svg" alt="" class="w-6 h-6" />
+                <img src="assets/icons/edit.svg" alt="Editar" class="w-6 h-6" />
               </button>
               <button
                 (click)="abrirModalExcluir(motorista)"
+                title="Excluir motorista"
+                class="cursor-pointer hover:opacity-60 transition-opacity btn-press"
               >
-                <img src="assets/icons/trash.svg" alt="" class="w-6 h-6" />
+                <img src="assets/icons/trash.svg" alt="Excluir" class="w-6 h-6" />
               </button>
             </div>
           </div>
@@ -244,7 +248,7 @@
       <div class="flex justify-end gap-4 px-[68px] py-6 border-t border-accent/30">
         <button
           (click)="closeDetails()"
-          class="flex items-center justify-center px-6 py-4 bg-primary text-white rounded-[8px] cursor-pointer hover:bg-primary/90 transition-colors"
+          class="flex items-center justify-center px-6 py-4 bg-primary text-white rounded-[12px] cursor-pointer hover:bg-primary/90 transition-colors btn-press"
         >
           <span class="text-button-text uppercase">Fechar</span>
         </button>

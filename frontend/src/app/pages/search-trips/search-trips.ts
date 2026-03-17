@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of, forkJoin } from 'rxjs';
 import { map, tap, switchMap, catchError } from 'rxjs/operators';
 import { TripService, TripHistoryDTO } from '../../services/trip.service';
+import { ToastService } from '../../components/toast/toast.service';
 
 @Component({
   selector: 'app-buscar-viagem',
@@ -20,6 +21,7 @@ export class SearchTripsComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private toastService = inject(ToastService);
 
   isLoading = true;
   viagens$!: Observable<any[]>;
@@ -194,7 +196,7 @@ export class SearchTripsComponent implements OnInit, AfterViewInit, OnDestroy {
       error: (err) => {
         this.isBooking = false;
         console.error('Failed to book trip', err);
-        alert('Erro ao reservar viagem. Verifique as vagas.');
+        this.toastService.error('Erro ao reservar viagem. Verifique as vagas disponíveis.');
         this.cdr.detectChanges();
       }
     });

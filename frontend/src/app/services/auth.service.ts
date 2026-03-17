@@ -13,6 +13,9 @@ export interface UserProfile {
   registrationStatus?: string; // PENDING | APPROVED | REJECTED (drivers only)
   rejectionReason?: string;
   ratePerKm?: number;
+  airConditioningEnabled?: boolean;
+  acceptsPets?: boolean;
+  largeLuggageEnabled?: boolean;
 }
 
 @Injectable({
@@ -135,6 +138,22 @@ export class AuthService {
 
   updateDriverRate(ratePerKm: number): Observable<{ratePerKm: number, message: string}> {
      return this.http.put<{ratePerKm: number, message: string}>(`${this.USER_API_URL}/rate`, { ratePerKm });
+  }
+
+  updateDriverPreferences(preferences: {
+    airConditioningEnabled: boolean;
+    acceptsPets: boolean;
+    largeLuggageEnabled: boolean;
+  }): Observable<{message: string}> {
+    return this.http.put<{message: string}>(`${this.USER_API_URL}/preferences`, preferences).pipe(
+      tap(() => {
+        // Update local cache
+        const current = this.currentUser();
+        if (current) {
+          this.currentUser.set({ ...current, ...preferences });
+        }
+      })
+    );
   }
 
   /** Fire-and-forget profile fetch for constructor/startup */

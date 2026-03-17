@@ -64,7 +64,7 @@
         </div>
 
         <!-- ==================== ESTADO: SEM VIAGEM ==================== -->
-        <div *ngIf="tripStatus === 'none'" class="flex flex-col items-center justify-center gap-4 flex-1">
+        <div *ngIf="tripStatus === 'none'" @fadeTransition class="flex flex-col items-center justify-center gap-4 flex-1">
           <!-- Ilustração -->
           <div class="glass-inner size-20 rounded-full flex items-center justify-center">
             <div class="size-10 bg-subtle-text opacity-50"
@@ -90,7 +90,7 @@
         </div>
 
         <!-- ==================== ESTADO: AGENDADO ==================== -->
-        <div *ngIf="tripStatus === 'scheduled' && currentTrip"
+        <div *ngIf="tripStatus === 'scheduled' && currentTrip" @fadeTransition
           class="flex flex-col md:flex-row gap-3 items-stretch w-full">
           <!-- Sub-card 1: Assentos disponíveis -->
           <div class="glass-inner rounded-[12px] p-5 flex flex-col items-center justify-center gap-2 ">
@@ -151,7 +151,7 @@
               </div>
             </div>
             <div class="flex flex-col">
-              <span class="text-small text-text">Chegada</span>
+              <span class="text-small text-text">Chegada:</span>
               <div class="flex gap-[5px] items-center">
                 <div class="size-6 shrink-0 bg-subtle-text"
                   style="-webkit-mask: url(assets/icons/location.svg) no-repeat center / contain; mask: url(assets/icons/location.svg) no-repeat center / contain;">
@@ -199,7 +199,7 @@
         </div>
 
         <!-- ==================== ESTADO: EM ANDAMENTO / CHEGANDO ==================== -->
-        <div *ngIf="(tripStatus === 'in_progress' || tripStatus === 'arriving') && currentTrip"
+        <div *ngIf="(tripStatus === 'in_progress' || tripStatus === 'arriving') && currentTrip" @fadeTransition
           class="flex flex-col gap-3 w-full flex-1">
 
           <!-- Row 1: Tempo, Progresso, Chegada -->
@@ -275,7 +275,7 @@
               <span class="text-small text-green-600 font-medium">{{ totalEarnings }}</span>
             </div>
 
-            <button (click)="toggleEmergencyPopup()"
+            <button (click)="toggleEmergencyPopup()" title="Emergência"
               class="glass-inner rounded-[12px] px-3 py-2 flex items-center justify-center cursor-pointer hover:bg-red-50 transition-all">
               <div class="size-6 rounded-full bg-red-500/20 flex items-center justify-center">
                 <div class="size-3 bg-red-500"
@@ -336,7 +336,7 @@
 
       <!-- ===== Popup de Passageiros ===== -->
       <div *ngIf="showPassengersPopup"
-        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
+        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in"
         (click)="togglePassengersPopup()">
         <div class="glass-card rounded-[24px] p-5 w-[320px] max-h-[60vh] overflow-y-auto"
           (click)="$event.stopPropagation()">
@@ -363,7 +363,7 @@
 
       <!-- ===== Popup de Emergência ===== -->
       <div *ngIf="showEmergencyPopup"
-        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
+        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in"
         (click)="toggleEmergencyPopup()">
         <div class="glass-card rounded-[24px] p-5 w-[280px]" (click)="$event.stopPropagation()">
           <h3 class="text-header-3 text-primary mb-3 text-center">Emergência</h3>
@@ -398,10 +398,15 @@
           class="glass-card square-card rounded-[24px] p-5 flex flex-col items-center justify-between gap-3 hover-lift">
           <h2 class="text-header-3 text-text">Ofertar viagem</h2>
           <!-- Map preview -->
-          <div class="w-full flex-1 rounded-[12px] overflow-hidden relative">
-            <img src="assets/map_example.png" class="w-full h-full object-cover" alt="map preview">
+          <div class="w-full flex-1 rounded-[12px] overflow-hidden relative pointer-events-none">
+            <app-route-map
+              [origin]="mockOrigin"
+              [destination]="mockDest"
+              [showRoute]="false"
+              height="100%">
+            </app-route-map>
             <!-- Arrow circle overlay -->
-            <div class="absolute top-2 left-2 size-[57px] bg-secondary rounded-full flex items-center justify-center">
+            <div class="absolute top-2 left-2 size-[57px] bg-secondary rounded-full flex items-center justify-center z-20 shadow-md">
               <div class="size-6 bg-white"
                 style="-webkit-mask: url(assets/icons/arrow_forward.svg) no-repeat center / contain; mask: url(assets/icons/arrow_forward.svg) no-repeat center / contain;">
               </div>

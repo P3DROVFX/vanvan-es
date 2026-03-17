@@ -57,9 +57,29 @@ export class SeuVeiculo {
   averageDistance = '68km';
 
   // ===== Preferences =====
-  airConditioningEnabled = true;
-  acceptsPets = false;
-  largeLuggageEnabled = true;
+  get airConditioningEnabled(): boolean {
+    return this.authService.currentUser()?.airConditioningEnabled ?? false;
+  }
+  set airConditioningEnabled(value: boolean) {
+    const current = this.authService.currentUser();
+    if (current) this.authService.currentUser.set({ ...current, airConditioningEnabled: value });
+  }
+
+  get acceptsPets(): boolean {
+    return this.authService.currentUser()?.acceptsPets ?? false;
+  }
+  set acceptsPets(value: boolean) {
+    const current = this.authService.currentUser();
+    if (current) this.authService.currentUser.set({ ...current, acceptsPets: value });
+  }
+
+  get largeLuggageEnabled(): boolean {
+    return this.authService.currentUser()?.largeLuggageEnabled ?? false;
+  }
+  set largeLuggageEnabled(value: boolean) {
+    const current = this.authService.currentUser();
+    if (current) this.authService.currentUser.set({ ...current, largeLuggageEnabled: value });
+  }
 
   // ===== Vehicle Form Popup (Add / Edit) =====
   popupMode: 'add' | 'edit' | null = null;
@@ -134,6 +154,20 @@ export class SeuVeiculo {
   }
 
   // ===== Vehicle Actions =====
+  savePreferences(): void {
+    this.authService.updateDriverPreferences({
+      airConditioningEnabled: this.airConditioningEnabled,
+      acceptsPets: this.acceptsPets,
+      largeLuggageEnabled: this.largeLuggageEnabled
+    }).subscribe({
+      next: () => this.toastService.success('Preferências atualizadas com sucesso!'),
+      error: (err) => {
+        console.error('Erro ao atualizar preferências:', err);
+        this.toastService.error('Erro ao atualizar preferências.');
+      }
+    });
+  }
+
   selectVehicle(vehicle: Vehicle): void {
     this.vehicles.forEach(v => (v.isSelected = false));
     vehicle.isSelected = true;

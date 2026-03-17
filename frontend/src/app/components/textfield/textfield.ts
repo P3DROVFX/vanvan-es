@@ -27,6 +27,7 @@ export class Textfield implements ControlValueAccessor {
   @Input() disabled: boolean = false;
   @Input() id: string = '';
   @Input() name: string = '';
+  @Input() errorMessage: string = '';
 
   value: string = '';
   focused: boolean = false;

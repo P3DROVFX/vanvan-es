@@ -2,19 +2,32 @@ import { Component, OnDestroy, OnInit, inject, Inject, PLATFORM_ID, ChangeDetect
 import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { ToastService } from '../../components/toast/toast.service';
 import { RatingService } from '../../services/rating.service';
 import { TripService } from '../../services/trip.service';
 import { AuthService } from '../../services/auth.service';
+import { RouteMap } from '../../components/route-map/route-map';
 
 type TripStatus = 'none' | 'scheduled' | 'in_progress' | 'arriving' | 'completed';
 
 @Component({
   selector: 'app-motorista-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouteMap],
   templateUrl: './motorista-page.html',
-  styleUrls: ['./motorista-page.css']
+  styleUrls: ['./motorista-page.css'],
+  animations: [
+    trigger('fadeTransition', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-in', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-out', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class MotoristaPage implements OnInit, OnDestroy {
 
@@ -166,6 +179,10 @@ export class MotoristaPage implements OnInit, OnDestroy {
 
   // ===== Current Trip =====
   currentTrip: any = null;
+
+  // ===== Map Coordinates (Mocks temporarily since API returns cities) =====
+  mockOrigin = { lat: -8.8828, lng: -36.4964 };
+  mockDest = { lat: -8.0476, lng: -34.8770 };
 
   // ===== Passengers (para viagem em andamento) =====
   get passengers() { return this.currentTrip?.passengers || []; }

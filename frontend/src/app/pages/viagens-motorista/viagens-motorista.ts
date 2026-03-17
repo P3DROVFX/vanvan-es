@@ -2,7 +2,7 @@ import { Component, effect, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { PastTrip } from '../../models/trip.model';
+import { PastTrip } from '../../models/trip-ui.model';
 import { TripService } from '../../services/trip.service';
 
 @Component({

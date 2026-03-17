@@ -1,6 +1,7 @@
 <button 
   [class]="buttonClasses"
-  [disabled]="disabled"
+  [disabled]="disabled || loading"
   type="button">
-  <ng-content></ng-content>
+  <span *ngIf="loading" class="animate-spin-slow size-5 border-2 border-current border-t-transparent rounded-full mr-2"></span>
+  <ng-content *ngIf="!loading"></ng-content>
 </button>

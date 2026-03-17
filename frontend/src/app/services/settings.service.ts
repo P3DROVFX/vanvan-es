@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { PageResponse } from '../models/pagination.model';
 
 export interface Journey {
   id?: number;
@@ -22,14 +23,6 @@ export interface DriverOption {
   name: string;
 }
 
-export interface SpringPage<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -38,11 +31,11 @@ export class SettingsService {
 
   constructor(private http: HttpClient) {}
 
-  listarMotoristas(page = 0, size = 100): Observable<SpringPage<DriverOption>> {
+  listarMotoristas(page = 0, size = 100): Observable<PageResponse<DriverOption>> {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size);
-    return this.http.get<SpringPage<DriverOption>>(`${this.API_URL}/drivers`, { params });
+    return this.http.get<PageResponse<DriverOption>>(`${this.API_URL}/drivers`, { params });
   }
 
   obterTarifaAtual(): Observable<PricingConfig> {

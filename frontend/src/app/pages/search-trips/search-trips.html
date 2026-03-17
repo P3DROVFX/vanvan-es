@@ -42,71 +42,76 @@
   <!-- Cards Container -->
   <div #cardsContainer class="flex justify-start items-stretch h-full gap-6 p-4 overflow-x-auto scroll-smooth" style="scrollbar-width: none; -ms-overflow-style: none;">
 
-  @for (viagem of viagens$ | async; track viagem.id) {
-    <div class="w-[480px] h-full p-6 bg-light rounded-[24px] flex flex-col justify-between shrink-0 font-sans">
+  @for (viagem of viagens$ | async; track viagem.id; let i = $index) {
+    <div class="w-[480px] h-full p-6 bg-light rounded-[24px] flex flex-col justify-between shrink-0 font-sans hover-lift animate-fade-in-up opacity-0"
+         [style.animation-delay]="(i * 0.08) + 's'">
 
       <div class="w-full h-full flex flex-col gap-4">
 
         <div class="flex items-center justify-center gap-3">
-          <span class="text-[#112B3C] text-[32px] font-extrabold tracking-tight">{{ viagem.origem }}</span>
-          <img src="assets/icons/arrow_forward.svg" class="w-8 h-8 opacity-80" alt="Para">
-          <span class="text-[#112B3C] text-[32px] font-extrabold tracking-tight">{{ viagem.destino }}</span>
+          <span class="text-text text-[32px] font-extrabold tracking-tight">{{ viagem.origem }}</span>
+          <div class="size-8 bg-text"
+               style="-webkit-mask: url(assets/icons/arrow_forward.svg) no-repeat center / contain; mask: url(assets/icons/arrow_forward.svg) no-repeat center / contain;"></div>
+          <span class="text-text text-[32px] font-extrabold tracking-tight">{{ viagem.destino }}</span>
         </div>
 
         <div class="flex items-stretch gap-1">
           <div class="w-fit px-6 bg-white rounded-tl-[20px] rounded-tr-[6px] rounded-br-[6px] rounded-bl-[20px] flex flex-col justify-center items-center py-3 ">
-            <span class="text-[#646464] text-xs uppercase tracking-widest">{{ viagem.mes }}</span>
-            <span class="text-[#112B3C] text-[40px] font-extrabold leading-none mt-1 mb-2">{{ viagem.dia }}</span>
+            <span class="text-subtle-text text-xs uppercase tracking-widest">{{ viagem.mes }}</span>
+            <span class="text-text text-[40px] font-extrabold leading-none mt-1 mb-2">{{ viagem.dia }}</span>
           </div>
 
           <div class="flex-1 bg-white px-5 rounded-tl-[6px] rounded-tr-[20px] rounded-br-[20px] rounded-bl-[6px] flex flex-col justify-center gap-2  py-3">
             <div class="flex items-center gap-3 text-subtle-text text-lg font-semibold">
-              <img src="assets/icons/clock.svg" class="w-6 h-6 opacity-80" alt="Horário">
+              <div class="size-6 bg-subtle-text shrink-0"
+                   style="-webkit-mask: url(assets/icons/clock.svg) no-repeat center / contain; mask: url(assets/icons/clock.svg) no-repeat center / contain;"></div>
               {{ viagem.horario }}
             </div>
             <div class="flex items-center gap-3 text-subtle-text text-lg font-semibold">
-              <img src="assets/icons/verify.svg" class="w-6 h-6 opacity-80" alt="Vagas">
+              <div class="size-6 bg-subtle-text shrink-0"
+                   style="-webkit-mask: url(assets/icons/verify.svg) no-repeat center / contain; mask: url(assets/icons/verify.svg) no-repeat center / contain;"></div>
               {{ viagem.vagas }} Vagas disponíveis
             </div>
           </div>
         </div>
 
-        <hr class="border-[#D1D1D1] border-t-2 w-full my-1 rounded-full">
+        <div class="w-full h-[2px] bg-accent/30 rounded-full"></div>
 
         <div class="flex flex-col gap-1 w-full text-[14px]">
-          <div class="bg-white rounded-[8px] py-2 px-4 flex items-center justify-between
-">
-            <div class="flex items-center gap-2 text-[#112B3C] font-bold shrink-0">
-                <img src="assets/icons/dollar-circle.svg" class="w-5 h-5" alt="Valor">
+          <div class="bg-white rounded-[8px] py-2 px-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-text font-bold shrink-0">
+                <div class="size-5 bg-text shrink-0"
+                     style="-webkit-mask: url(assets/icons/dollar-circle.svg) no-repeat center / contain; mask: url(assets/icons/dollar-circle.svg) no-repeat center / contain;"></div>
                 Valor:
             </div>
-            <span class="text-[#646464] font-medium">R$ {{ viagem.preco | number:'1.2-2' }}</span>
+            <span class="text-subtle-text font-medium">R$ {{ viagem.preco | number:'1.2-2' }}</span>
           </div>
 
-          <div class="bg-white rounded-[8px] py-2 px-4 flex items-center justify-between
-">
-            <div class="flex items-center gap-2 text-[#112B3C] font-bold shrink-0">
-                <img src="assets/icons/routing.svg" class="w-5 h-5" alt="Distância">
+          <div class="bg-white rounded-[8px] py-2 px-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-text font-bold shrink-0">
+                <div class="size-5 bg-text shrink-0"
+                     style="-webkit-mask: url(assets/icons/routing.svg) no-repeat center / contain; mask: url(assets/icons/routing.svg) no-repeat center / contain;"></div>
                 Distância:
             </div>
-            <span class="text-[#646464] font-medium">{{ viagem.distancia }}km</span>
+            <span class="text-subtle-text font-medium">{{ viagem.distancia }}km</span>
           </div>
 
-          <div class="bg-white rounded-[8px] py-2 px-4 flex items-center justify-between
-">
-            <div class="flex items-center gap-2 text-[#112B3C] font-bold shrink-0">
-                <img src="assets/icons/location.svg" class="w-5 h-5" alt="Partida">
+          <div class="bg-white rounded-[8px] py-2 px-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-text font-bold shrink-0">
+                <div class="size-5 bg-text shrink-0"
+                     style="-webkit-mask: url(assets/icons/location.svg) no-repeat center / contain; mask: url(assets/icons/location.svg) no-repeat center / contain;"></div>
                 Partida:
             </div>
-            <span class="text-[#646464] font-medium truncate text-right max-w-[65%]">{{ viagem.localPartida }}</span>
+            <span class="text-subtle-text font-medium truncate text-right max-w-[65%]">{{ viagem.localPartida }}</span>
           </div>
 
-          <div class="bg-white rounded-[8px] py-2 px-4 flex items-center justify-between ">
-            <div class="flex items-center gap-2 text-[#112B3C] font-bold shrink-0">
-                <img src="assets/icons/location.svg" class="w-5 h-5" alt="Referência">
+          <div class="bg-white rounded-[8px] py-2 px-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-text font-bold shrink-0">
+                <div class="size-5 bg-text shrink-0"
+                     style="-webkit-mask: url(assets/icons/location.svg) no-repeat center / contain; mask: url(assets/icons/location.svg) no-repeat center / contain;"></div>
                 Referência:
             </div>
-            <span class="text-[#646464] font-medium truncate text-right max-w-[65%]">{{ viagem.pontoReferencia }}</span>
+            <span class="text-subtle-text font-medium truncate text-right max-w-[65%]">{{ viagem.pontoReferencia }}</span>
           </div>
         </div>
 
@@ -114,20 +119,24 @@
           <img src="assets/VAN-EMPTY.png" class="w-[160px] h-auto object-contain" alt="Veículo">
 
           <div class="flex-1 flex flex-col gap-2 justify-center w-full min-w-0">
-            <div class="text-[#646464] text-[13px] font-medium flex items-center gap-2">
-              <img src="assets/icons/bus.svg" class="w-4 h-4 opacity-70 shrink-0" alt="Modelo">
+            <div class="text-subtle-text text-[13px] font-medium flex items-center gap-2">
+              <div class="size-4 bg-subtle-text shrink-0"
+                   style="-webkit-mask: url(assets/icons/bus.svg) no-repeat center / contain; mask: url(assets/icons/bus.svg) no-repeat center / contain;"></div>
               <span class="truncate">{{ viagem.veiculoModelo || 'Mercedes-Benz Sprinter 2020' }}</span>
             </div>
-            <div class="text-[#646464] text-[13px] font-medium flex items-center gap-2">
-              <img src="assets/icons/solar_plate-bold.svg" class="w-4 h-4 opacity-70 shrink-0" alt="Placa">
+            <div class="text-subtle-text text-[13px] font-medium flex items-center gap-2">
+              <div class="size-4 bg-subtle-text shrink-0"
+                   style="-webkit-mask: url(assets/icons/solar_plate-bold.svg) no-repeat center / contain; mask: url(assets/icons/solar_plate-bold.svg) no-repeat center / contain;"></div>
               <span class="truncate">{{ viagem.veiculoPlaca }}</span>
             </div>
-            <div class="text-[#646464] text-[13px] font-medium flex items-center gap-2">
-              <img src="assets/icons/user-tag.svg" class="w-4 h-4 opacity-70 shrink-0" alt="Motorista">
+            <div class="text-subtle-text text-[13px] font-medium flex items-center gap-2">
+              <div class="size-4 bg-subtle-text shrink-0"
+                   style="-webkit-mask: url(assets/icons/user-tag.svg) no-repeat center / contain; mask: url(assets/icons/user-tag.svg) no-repeat center / contain;"></div>
               <span class="truncate">{{ viagem.motoristaNome }}</span>
             </div>
-            <div class="text-[#646464] text-[13px] font-medium flex items-center gap-2">
-              <img src="assets/icons/star.svg" class="w-4 h-4 opacity-70 shrink-0" alt="Nota">
+            <div class="text-subtle-text text-[13px] font-medium flex items-center gap-2">
+              <div class="size-4 bg-subtle-text shrink-0"
+                   style="-webkit-mask: url(assets/icons/star.svg) no-repeat center / contain; mask: url(assets/icons/star.svg) no-repeat center / contain;"></div>
               <span>{{ viagem.motoristaNota }}</span>
             </div>
           </div>
@@ -137,7 +146,7 @@
 
       <button
         (click)="selecionarViagem(viagem)"
-        class="w-full mt-4 shrink-0 bg-[#F66B0E] hover:brightness-110 transition h-[56px] rounded-[12px] text-white font-bold text-[15px] uppercase tracking-wider flex justify-center items-center gap-2 -md">
+        class="w-full mt-4 shrink-0 bg-primary hover:brightness-110 active:scale-95 transition-all h-[56px] rounded-[12px] text-white text-button-text flex justify-center items-center gap-2 cursor-pointer btn-press">
 
         <div class="w-6 h-6 bg-white"
              style="-webkit-mask: url(assets/icons/car.svg) no-repeat center / contain; mask: url(assets/icons/car.svg) no-repeat center / contain;"></div>
@@ -149,8 +158,13 @@
   }
 
   @if ((viagens$ | async)?.length === 0) {
-    <div class="w-full p-10 text-center text-xl text-[#646464]">
-      Nenhuma viagem encontrada para esta data.
+    <div class="w-full flex flex-col items-center justify-center gap-4 py-16 animate-fade-in">
+      <div class="size-20 bg-accent opacity-50"
+           style="-webkit-mask: url(assets/icons/airplane-square.svg) no-repeat center / contain; mask: url(assets/icons/airplane-square.svg) no-repeat center / contain;"></div>
+      <div class="flex flex-col items-center gap-1">
+        <span class="font-sans text-header-3 text-text">Nenhuma viagem encontrada</span>
+        <span class="font-sans text-small text-subtle-text text-center">Tente buscar outra data ou ajustar os filtros.</span>
+      </div>
     </div>
   }
 
@@ -158,85 +172,95 @@
 </div>
 
 @if (showConfirmModal) {
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-[1000] p-4">
+<div class="fixed inset-0 z-[1000] flex items-center justify-center animate-fade-in"
+     (click)="fecharModalConfirmacao()">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-  <div class="w-[1178px] px-[68px] py-6 bg-[#FAFAFA] rounded-[24px] flex flex-col gap-6 overflow-hidden font-sans">
+  <div class="relative z-10 w-[1178px] px-[68px] py-6 bg-white rounded-[24px] flex flex-col gap-6 overflow-hidden font-sans shadow-lg mx-4 animate-scale-in"
+       (click)="$event.stopPropagation()">
 
     <div class="flex flex-col gap-6 w-full">
-      <div class="text-[#112B3C] text-[64px] font-bold leading-tight">Confirmar viagem</div>
+      <div class="text-text text-header-1">Confirmar viagem</div>
 
       <div class="flex flex-col gap-4 w-full">
-        <div class="text-[#112B3C] text-[24px] font-bold">Confirme a viagem</div>
+        <div class="text-text text-header-3">Confirme a viagem</div>
 
         <div class="flex flex-col gap-6 w-full">
 
           <div class="flex items-stretch gap-1 w-full">
-            <div class="w-[110px] bg-[#EEEEEF] rounded-tl-[24px] rounded-tr-[4px] rounded-br-[4px] rounded-bl-[24px] flex flex-col justify-center items-center py-4 px-3">
-              <span class="text-[#646464] text-sm font-medium uppercase tracking-widest">{{ viagemSelecionada.mes || 'FEV' }}</span>
-              <span class="text-[#112B3C] text-[40px] font-bold leading-none my-1">{{ viagemSelecionada.dia || '10' }}</span>
-              <span class="text-[#646464] text-sm font-medium">{{ viagemSelecionada.horario || '08:00' }}</span>
+            <div class="w-[110px] bg-light rounded-tl-[24px] rounded-tr-[4px] rounded-br-[4px] rounded-bl-[24px] flex flex-col justify-center items-center py-4 px-3">
+              <span class="text-subtle-text text-sm font-medium uppercase tracking-widest">{{ viagemSelecionada.mes || 'FEV' }}</span>
+              <span class="text-text text-[40px] font-bold leading-none my-1">{{ viagemSelecionada.dia || '10' }}</span>
+              <span class="text-subtle-text text-sm font-medium">{{ viagemSelecionada.horario || '08:00' }}</span>
             </div>
 
-            <div class="flex-1 bg-[#EEEEEF] rounded-tl-[4px] rounded-tr-[25px] rounded-br-[25px] rounded-bl-[4px] p-5 flex flex-col justify-center gap-3">
+            <div class="flex-1 bg-light rounded-tl-[4px] rounded-tr-[25px] rounded-br-[25px] rounded-bl-[4px] p-5 flex flex-col justify-center gap-3">
 
                <div class="flex items-center gap-2">
-                  <span class="text-[#112B3C] text-[24px] font-bold">{{ viagemSelecionada.origem || 'Garanhuns' }}</span>
-                  <img src="assets/icons/arrow_forward.svg" class="w-6 h-6 opacity-70" alt="Para">
-                  <span class="text-[#112B3C] text-[24px] font-bold">{{ viagemSelecionada.destino || 'Recife' }}</span>
+                  <span class="text-text text-header-3">{{ viagemSelecionada.origem || 'Garanhuns' }}</span>
+                  <div class="size-6 bg-text shrink-0"
+                       style="-webkit-mask: url(assets/icons/arrow_forward.svg) no-repeat center / contain; mask: url(assets/icons/arrow_forward.svg) no-repeat center / contain;"></div>
+                  <span class="text-text text-header-3">{{ viagemSelecionada.destino || 'Recife' }}</span>
                </div>
 
                <div class="flex items-center gap-6">
-                  <div class="flex items-center gap-1.5 text-[#646464] text-sm font-medium">
-                     <img src="assets/icons/dollar-circle.svg" class="w-[18px] h-[18px]" alt="Valor">
+                  <div class="flex items-center gap-1.5 text-subtle-text text-sm font-medium">
+                     <div class="size-[18px] bg-subtle-text shrink-0"
+                          style="-webkit-mask: url(assets/icons/dollar-circle.svg) no-repeat center / contain; mask: url(assets/icons/dollar-circle.svg) no-repeat center / contain;"></div>
                      R$ {{ (viagemSelecionada.preco | number:'1.2-2') || '0,00' }}
                   </div>
-                  <div class="flex items-center gap-1.5 text-[#646464] text-sm font-medium">
-                     <img src="assets/icons/bus.svg" class="w-[18px] h-[18px]" alt="Veículo">
+                  <div class="flex items-center gap-1.5 text-subtle-text text-sm font-medium">
+                     <div class="size-[18px] bg-subtle-text shrink-0"
+                          style="-webkit-mask: url(assets/icons/bus.svg) no-repeat center / contain; mask: url(assets/icons/bus.svg) no-repeat center / contain;"></div>
                      {{ viagemSelecionada.veiculoModelo || 'Sprinter 2025' }} {{ viagemSelecionada.veiculoPlaca || 'XXXX-XXX' }}
                   </div>
                </div>
 
-               <div class="flex items-center gap-1.5 text-[#646464] text-sm font-medium">
-                  <img src="assets/icons/location.svg" class="w-[18px] h-[18px]" alt="Embarque">
+               <div class="flex items-center gap-1.5 text-subtle-text text-sm font-medium">
+                  <div class="size-[18px] bg-subtle-text shrink-0"
+                       style="-webkit-mask: url(assets/icons/location.svg) no-repeat center / contain; mask: url(assets/icons/location.svg) no-repeat center / contain;"></div>
                   {{ viagemSelecionada.localPartida || 'Rodoviária - Garanhuns' }}
                </div>
             </div>
           </div>
 
-          <hr class="border-[#B1B1B1] w-full">
+          <div class="w-full h-[1px] bg-accent/40"></div>
 
           <div class="flex justify-between items-center w-full">
             <div class="flex items-center gap-4">
-               <div class="w-[50px] h-[50px] bg-[#EEEEEF] rounded-full flex justify-center items-center">
-                  <img src="assets/icons/user-tag.svg" class="w-6 h-6" alt="Motorista">
+               <div class="w-[50px] h-[50px] bg-light rounded-full flex justify-center items-center">
+                  <div class="size-6 bg-text"
+                       style="-webkit-mask: url(assets/icons/user-tag.svg) no-repeat center / contain; mask: url(assets/icons/user-tag.svg) no-repeat center / contain;"></div>
                </div>
                <div class="flex flex-col gap-1">
-                  <span class="text-[#112B3C] text-[20px] font-medium leading-none">{{ viagemSelecionada.motoristaNome || 'Nome do motorista' }}</span>
-                  <a href="#" class="text-[#557D96] text-[16px] underline">Contato do motorista</a>
+                  <span class="text-text text-medium leading-none">{{ viagemSelecionada.motoristaNome || 'Nome do motorista' }}</span>
+                  <a class="text-secondary text-link-text underline cursor-pointer hover:text-secondary/80 transition-colors">Contato do motorista</a>
                </div>
             </div>
             <div class="flex items-center gap-2">
-               <img src="assets/icons/star.svg" class="w-6 h-6" alt="Avaliação">
-               <span class="text-black text-[20px] font-medium">{{ viagemSelecionada.motoristaNota || "5.0" }}</span>
+               <div class="size-6 bg-text shrink-0"
+                    style="-webkit-mask: url(assets/icons/star.svg) no-repeat center / contain; mask: url(assets/icons/star.svg) no-repeat center / contain;"></div>
+               <span class="text-text text-medium font-medium">{{ viagemSelecionada.motoristaNota || "5.0" }}</span>
             </div>
           </div>
 
-          <hr class="border-[#B1B1B1] w-full">
+          <div class="w-full h-[1px] bg-accent/40"></div>
         </div>
       </div>
     </div>
 
-    <div class="flex justify-end items-center gap-6 w-full pt-4">
+    <div class="flex justify-end items-center gap-4 w-full pt-4">
       <button
         (click)="fecharModalConfirmacao()"
-        class="px-[60px] py-[14px] bg-[#EEEEEF] hover:bg-gray-200 transition rounded-lg text-[#557D96] text-[16px] font-bold uppercase tracking-wider">
+        class="px-[60px] py-[14px] bg-light hover:bg-accent/30 transition-all rounded-[12px] text-secondary text-button-text cursor-pointer btn-press">
         Cancelar
       </button>
 
       <button
         (click)="fazerPagamento()"
         [disabled]="isBooking"
-        class="px-[60px] py-[14px] bg-[#F66B0E] hover:brightness-110 transition rounded-lg text-[#EEEEEF] text-[16px] font-bold uppercase tracking-wider flex items-center gap-2 disabled:opacity-70">
+        class="px-[60px] py-[14px] bg-primary hover:brightness-110 transition-all rounded-[12px] text-white text-button-text flex items-center gap-2 cursor-pointer disabled:opacity-70 btn-press">
         @if (isBooking) {
             <span class="mr-2">Processando...</span>
         }
@@ -250,32 +274,47 @@
 }
 
 @if (showPaymentModal) {
-<div class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-[1000]">
+<div class="fixed inset-0 z-[1000] flex items-center justify-center animate-fade-in"
+     (click)="fecharModalPagamento()">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-  <div class="bg-white rounded-3xl flex flex-col py-6 px-[68px] w-full max-w-[800px]">
+  <div class="relative z-10 bg-white rounded-[24px] flex flex-col py-6 px-[68px] w-full max-w-[800px] shadow-lg mx-4 animate-scale-in"
+       (click)="$event.stopPropagation()">
 
-    <h2 class="text-[#112B3C] text-[36px] font-bold mb-6">
-      Aguardando pagamento
-    </h2>
+    <!-- Header with close button -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-text text-header-2">
+        Aguardando pagamento
+      </h2>
+      <button
+        (click)="fecharModalPagamento()"
+        class="size-10 rounded-full hover:bg-light transition-colors cursor-pointer flex items-center justify-center btn-press">
+        <div class="size-6 bg-text"
+             style="-webkit-mask: url(assets/icons/close.svg) no-repeat center / contain; mask: url(assets/icons/close.svg) no-repeat center / contain;"></div>
+      </button>
+    </div>
 
     <div class="flex justify-between items-start mb-6">
       <div class="flex flex-col">
-        <span class="text-[#112B3C] text-[20px] font-bold">Pix gerado:</span>
-        <span class="text-[#646464] text-base">Ou, utilize o qr code:</span>
+        <span class="text-text text-header-3">Pix gerado:</span>
+        <span class="text-subtle-text text-body">Ou, utilize o qr code:</span>
       </div>
-      <span class="text-[#646464] text-base tracking-wider select-all mt-1">
+      <span class="text-subtle-text text-body tracking-wider select-all mt-1">
         {{ codigoPix }}
       </span>
     </div>
 
     <div class="flex justify-center mb-6">
-      <div class="w-[240px] h-[240px] bg-[#333333]"></div>
+      <div class="p-4 bg-white rounded-[16px] shadow-md border border-light">
+        <div class="w-[200px] h-[200px] bg-dark rounded-[8px]"></div>
+      </div>
     </div>
 
     <div class="flex justify-end mt-2">
       <button
         (click)="fecharModalPagamento()"
-        class="text-[#557D96] bg-[#EEEEEF] px-8 py-3 rounded-lg font-bold text-sm tracking-wider uppercase hover:bg-gray-200 transition-colors">
+        class="px-8 py-3 bg-light hover:bg-accent/30 transition-all rounded-[12px] text-secondary text-button-text cursor-pointer btn-press">
         FECHAR
       </button>
     </div>

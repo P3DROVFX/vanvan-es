@@ -337,9 +337,9 @@
 
       <!-- Past Trips Container -->
       <div *ngIf="!isLoading && pastTrips.length > 0"
-           class="flex flex-col gap-3 w-full animate-fade-in">
+           class="flex flex-col gap-3 w-full animate-fade-in stagger-cards">
         <div *ngFor="let trip of pastTrips"
-             class="bg-white rounded-[18px] overflow-hidden w-full">
+             class="bg-white rounded-[18px] overflow-hidden w-full transition-all duration-200 hover:shadow-md hover:-translate-y-[1px]">
           <!-- Trip Info Row -->
           <div class="flex items-center gap-3 p-3">
             <!-- Date Badge -->
@@ -364,7 +364,7 @@
             <!-- Status + Details -->
             <div class="flex flex-col gap-1 items-end shrink-0">
               <app-tag [label]="trip.statusLabel" [variant]="trip.variant"></app-tag>
-              <a [routerLink]="['/viagem', '1']" class="font-sans text-small text-subtle-text underline cursor-pointer">Detalhes</a>
+              <a [routerLink]="['/viagem', trip.id]" class="font-sans text-small text-subtle-text underline cursor-pointer hover:text-secondary transition-colors">Detalhes</a>
             </div>
           </div>
           <div class="m-2 flex flex-col gap-2">

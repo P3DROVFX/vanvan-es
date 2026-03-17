@@ -40,6 +40,9 @@ export class Home implements OnDestroy {
   destinoSuggestions: City[] = [];
   showPartidaDropdown = false;
   showDestinoDropdown = false;
+  
+  partidaSelectedIndex: number = -1;
+  destinoSelectedIndex: number = -1;
 
   private partidaSearch$ = new Subject<string>();
   private destinoSearch$ = new Subject<string>();
@@ -58,6 +61,7 @@ export class Home implements OnDestroy {
         ).subscribe(cities => {
           this.partidaSuggestions = cities;
           this.showPartidaDropdown = cities.length > 0;
+          this.partidaSelectedIndex = -1;
         }),
         this.destinoSearch$.pipe(
           debounceTime(250),
@@ -65,6 +69,7 @@ export class Home implements OnDestroy {
         ).subscribe(cities => {
           this.destinoSuggestions = cities;
           this.showDestinoDropdown = cities.length > 0;
+          this.destinoSelectedIndex = -1;
         })
       );
 
@@ -202,18 +207,52 @@ export class Home implements OnDestroy {
     this.partidaSearch$.next(this.partidaQuery);
   }
 
+  onPartidaKeyDown(event: KeyboardEvent): void {
+    if (!this.showPartidaDropdown) return;
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.partidaSelectedIndex = (this.partidaSelectedIndex + 1) % this.partidaSuggestions.length;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.partidaSelectedIndex = this.partidaSelectedIndex <= 0 ? this.partidaSuggestions.length - 1 : this.partidaSelectedIndex - 1;
+    } else if (event.key === 'Enter' && this.partidaSelectedIndex >= 0) {
+      event.preventDefault();
+      this.selectPartida(this.partidaSuggestions[this.partidaSelectedIndex]);
+    } else if (event.key === 'Escape') {
+      this.showPartidaDropdown = false;
+    }
+  }
+
   onDestinoInput(): void {
     this.destinoSearch$.next(this.destinoQuery);
+  }
+
+  onDestinoKeyDown(event: KeyboardEvent): void {
+    if (!this.showDestinoDropdown) return;
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.destinoSelectedIndex = (this.destinoSelectedIndex + 1) % this.destinoSuggestions.length;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.destinoSelectedIndex = this.destinoSelectedIndex <= 0 ? this.destinoSuggestions.length - 1 : this.destinoSelectedIndex - 1;
+    } else if (event.key === 'Enter' && this.destinoSelectedIndex >= 0) {
+      event.preventDefault();
+      this.selectDestino(this.destinoSuggestions[this.destinoSelectedIndex]);
+    } else if (event.key === 'Escape') {
+      this.showDestinoDropdown = false;
+    }
   }
 
   selectPartida(city: City): void {
     this.partidaQuery = city.label;
     this.showPartidaDropdown = false;
+    this.partidaSelectedIndex = -1;
   }
 
   selectDestino(city: City): void {
     this.destinoQuery = city.label;
     this.showDestinoDropdown = false;
+    this.destinoSelectedIndex = -1;
   }
 
   @HostListener('document:click', ['$event'])

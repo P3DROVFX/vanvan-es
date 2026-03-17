@@ -41,8 +41,6 @@ export class Viagens implements OnDestroy {
   constructor() {
     afterNextRender(() => {
       this.startCountdown();
-
-      this.startCountdown();
       this.fetchTrips();
     });
   }
@@ -358,7 +356,7 @@ export class Viagens implements OnDestroy {
       // Fallback: copy to clipboard
       const text = `${shareData.text}\n${shareData.url}`;
       await navigator.clipboard.writeText(text);
-      alert('Link copiado para a área de transferência!');
+      this.toastService.success('Link copiado para a área de transferência!');
     }
   }
 }

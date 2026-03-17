@@ -74,6 +74,7 @@ export class ClientSidebar implements AfterViewInit {
   updateSlider() {
     if (!this.navItems) return;
     
+    // Check for active items
     const items = this.navItems.toArray();
     const activeItem = items.find(item => item.nativeElement.classList.contains('active-route'));
 
@@ -98,9 +99,5 @@ export class ClientSidebar implements AfterViewInit {
 
   setActivePage(page: string) {
     this.activePage.set(page);
-  }
-
-  logout() {
-    this.authService.logout();
   }
 }
